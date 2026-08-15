@@ -4,6 +4,59 @@ Append-only. One entry per accepted version.
 
 ---
 
+## v003 — 2026-08-16
+
+**The room, and one hope a day.**
+
+The village had been getting better for two versions while the house stayed
+where it was. Two consecutive scorecards named the same faults in it and
+neither was touched, so this version is the one that fixes them — and, because
+a repaint touches only one pillar, the villagers learned to read the room.
+
+- **The house is drawn front-on and nothing else.** It used to mix four
+  projections in one room. Everything now stands on one floor line and every
+  place you can put something down sits on a surface genuinely underneath it:
+  the sill, two shelves, the table, a stool, a crate. The rug is gone — a floor
+  rug seen from the front is a stripe — and a woven mat at the foot of the door
+  replaces both it and the word "out" that used to be painted on the door.
+- **Decorating happens in the room.** The picker was a full-height sheet that
+  covered the very thing it was decorating, so you chose blind. It is now a
+  single pinned row, the room stays on screen, and the spot you are filling
+  pulses while you choose.
+- **Empty places get a small warm dot**, and only while you are carrying
+  something to put down. The old dashed outline read as a debug drop-target.
+- **Villagers have faces.** Three portraits drawn at portrait size, instead of
+  a 16-pixel world sprite blown up to three times its width.
+- **Villagers read the room as a whole** — whether your house has gone tidy,
+  soft, strange, or like the pond, or simply has no surface left. Five moods,
+  fifteen new lines, read off the tags the items already carried.
+- **Each villager hopes for one thing a day.** The simulation was handing one
+  villager 169 gifts inside a single stretch. Nothing is lost by being late —
+  a wish missed for a hundred days is still waiting.
+
+### The bug this version found
+
+Village stage and open areas were gated on the **current** bloom balance. v001
+had no way to spend bloom, so it never showed. v002 gave bloom a sink — and so
+made spending it walk the village backwards: the pond path and the hollow
+closing again, the stage falling from 4 to 1. That is loss, and unreachable
+content, and `PILLARS.md` forbids both. **It shipped in v002.**
+
+The arbiter found the symptom in the artifacts alone — three seeds reporting a
+final stage below the stage their own pacing tables said they had reached on
+day 2 — and declined to fire on an ambiguity it could not resolve from outside.
+It was right to be suspicious. Bloom is now two numbers: a high-water mark that
+only rises and is the only thing growth is gated on, and a purse you spend.
+There is a regression check that grows the village, spends the well dry every
+way the game allows, and asserts nothing closed.
+
+**Arbiter: 20/25** (from 19) — interlock 4, systemic health 4, visual charm
+3→4, voice 4, session feel 4. Accepted. Two standing rulings against v004: the
+grind rule must stop computing its veto under a narrowed definition, and
+`worstAbsoluteRepetition` must come down from 55 or v004 is rejected outright.
+
+---
+
 ## v002 — 2026-08-16
 
 **The village keeps having a next thing.**

@@ -96,9 +96,11 @@ var SCENES = [
         gatherTimes(S, 'berrybush', 3);
         gatherTimes(S, 'oldstump', 4);
         S.area = 'home';
-        var held = C.heldItems(S);
-        held.slice(0, 5).forEach(function (it, i) {
-          C.doAction(S, { kind: 'place', slot: i, item: it });
+        gatherTimes(S, 'oldstump', 4);
+        /* a deliberately tidy room, so the screenshot shows a decision
+           rather than the first five things that came to hand */
+        ['pebble', 'acorn', 'pinecone', 'moss', 'berries'].forEach(function (it, i) {
+          if (S.inv[it]) C.doAction(S, { kind: 'place', slot: i, item: it });
         });
         setClock(S, 3, 15);
       });
@@ -119,7 +121,7 @@ var SCENES = [
         setClock(S, 3, 10);
       });
     },
-    after: 'slot:5'
+    after: 'slot:4'
   }
   ,{
     name: '6-village-built',

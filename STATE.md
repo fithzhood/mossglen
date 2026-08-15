@@ -7,116 +7,77 @@ of the last one. Written for a stranger, because that is what you are.*
 
 ## Where things stand
 
-**Current version: v002, accepted at 19/25. Tagged, pushed, live. Nothing is in
-progress and nothing is broken.** The next cycle starts clean at Phase 1.
+**Last pushed version: v002, accepted at 19/25, live.**
 
-`19/25` is the ratchet floor. v003 must total 20 or more or it is rejected,
-regardless of how good it looks.
+**v003 is built, frozen into `v/003/`, and awaiting a verdict.** It has not
+been committed or pushed. `main` is clean at tag `v002`, so the deployed
+gallery is unaffected whatever happened to the session that was building it.
 
-Scores so far — v001 16/25, v002 19/25:
+### If you are resuming and do not know the outcome
 
-| axis | v001 | v002 |
-|---|---|---|
-| A interlock | 3 | 4 |
-| B systemic health | 2 | 4 |
-| C visual charm | 3 | **3** |
-| D voice | 4 | 4 |
-| E session feel | 4 | 4 |
+Look at `reports/003/scorecard.md`:
 
-**Read that C column.** Visual charm has not moved in two versions, and both
-scorecards say the same thing about why: the specific faults they named were
-never touched. B is nearly maxed and A is close. **C is where the remaining
-points are, and it is also the cheapest work on the board.**
+- **ACCEPTED and total ≥ 19** → finish Phase 7. Append to `CHANGELOG.md`, add
+  v003 to `index.html` (newest first, with its score), commit as
+  `v003: the room, and one hope a day [score: N/25]`, tag `v003`, push, then
+  confirm https://fithzhood.github.io/mossglen/v/003/mossglen.html returns 200.
+  Then fold the new critique into `BACKLOG.md` and rewrite this file for v004.
+- **REJECTED** → `git reset --hard v002` and `git clean -fd` to remove `v/003/`
+  and `reports/003/`. Record why in `DECISIONS.md` under `## Dead ends`.
+  **Take a different pillar next cycle** — do not retry a variation of the
+  same idea.
+- **Missing or truncated** → the arbiter never finished. Re-run it: a subagent
+  with a fresh context, given only `PILLARS.md`, `RUBRIC.md`,
+  `reports/003/metrics.json`, the seven screenshots in `reports/003/`,
+  `dialogue-sample.txt`, and the previous scorecards. Tell it explicitly not to
+  open any source file, and withhold the diff, the backlog item name, and any
+  explanation of what was attempted.
 
-## What the game currently is
+`reports/003/scorecard-provisional.md` is a **real earlier verdict on an
+earlier build of v003** (20/25, accepted). Do not treat it as the final word —
+the artifacts were regenerated after it, for the reason below. Keep it; it is
+part of the record.
 
-Mossglen is a cozy village game that runs in one HTML file with no build step.
-You stand in a clearing. You tap things to walk over and look at them.
+## What v003 does, and the bug it uncovered
 
-- **Gathering** — 7 spots across 3 areas, 10 findable things. Each spot
-  regrows after 120 in-game minutes. A glass bead is the rare, surprising one.
-- **Decorating** — 6 places in your house (windowsill, two shelves, table,
-  floor by the bed, rug). Placing consumes from the bag, taking back returns it
-  exactly.
-- **Villagers** — Pim (hedgehog, brisk, keeps lists), Marla (heron, slow and
-  poetic), Bodkin (mole, funny, delighted by everything). They respond in
-  priority order: first meeting → the village changing → a hint about a place
-  you cannot reach yet → what they are hoping someone brings them → what is in
-  your house → what is in your bag → weather-and-mood by time of day.
-- **Village growth** — the old well converts anything into *bloom*. Bloom opens
-  the pond path (12) and lights the hollow (55), with a final stage at 140.
-  Growth also moves villagers: Marla is at the pond in the afternoons once the
-  well holds water; Bodkin is in the hollow before dawn once the lantern is lit.
-- **Giving** — each villager cycles through three wishes forever. Handing over
-  the wished-for thing is worth double bloom and gets a warm line. This is the
-  edge that ties gathering → villagers → growth in a single action.
+v003 took BACKLOG items 1 and 4 folded together: repaint the home interior, and
+move decorating into the room instead of behind a sheet, with villagers
+reacting to the character of what is on show.
 
-Time runs at `TIME_COMPRESSION = 6` in-game minutes per real second (a day is
-four real minutes) and **only while the tab is visible**. Nothing decays, ever.
+- The room is committed to **front elevation** — one floor line, every slot on
+  a surface genuinely underneath it. The rug is gone (a floor rug seen from the
+  front is a stripe, and it was what made the old room a collage); a woven mat
+  at the foot of the door replaces both it and the baked-in word "out".
+- **Empty slots get a small warm dot**, and only while you are carrying
+  something. The old dashed rectangle read as a debug drop-target.
+- **Portraits are drawn at portrait size** (20 × 24) instead of blowing a
+  16 × 22 world sprite up to 48 px wide.
+- **Villagers read the room as a whole** — five moods off the item tags
+  (`tidy`, `soft`, `odd`, `water`, and a full house). This is the villagers
+  edge that made a pure repaint eligible under the interlock rule.
+- **Each villager hopes for one thing a day.** The simulation showed the bot
+  handing one villager 169 gifts inside a single milestone window.
 
-## What was just tried, and what happened
+### The bug, because it matters more than the feature
 
-**v002 — village projects.** BACKLOG item 1 from v001's arbiter. The village
-board at the signpost: six projects, each proposed by a villager, each costing
-gathered material plus bloom, each placing a real object in the world — then
-the village green, which takes five of anything for ever.
+Village stage and open areas were gated on the **current** bloom balance.
+v001 had no way to spend bloom, so this was invisible. v002 gave bloom a sink —
+and thereby made spending it walk the village backwards: the pond path and the
+hollow closing again, the stage dropping from 4 back to 1. **That is loss, and
+unreachable content, and `PILLARS.md` forbids both.** It shipped in v002 and
+nobody caught it — not two arbiter sessions, not 6,200 regression checks.
 
-It worked, on the numbers it was aimed at:
+The arbiter found the *symptom* from the artifacts alone: three seeds reported
+`finalStage` of 1, 1 and 2 while their own pacing tables said they had reached
+stage 4 on day 2–4. It declined to fire on an ambiguity it could not resolve,
+and said the veto would fire next version if the answer was that stage
+regresses. The answer was that stage regresses.
 
-| | v001 | v002 |
-|---|---|---|
-| items left unused after 300 days | 3,958.6 | 16 |
-| bloom overspill factor | 277.8 | 2.4 |
-| dialogue reached | 93.2% | 98.2% |
-| unreachable dialogue | 1 node | 0 |
-| worst required repetition (threshold 15) | 13 | 13 (median 13 → 8) |
-| last first-time milestone | day 3 | day 30–40 |
-
-The arbiter confirmed the arc was extended with content rather than padded with
-cost, which is the part that mattered.
-
-Three things worth knowing:
-- **Four new sprites were drawn, referenced by the project data, and never
-  added to the loader's list.** The renderer drew each one's ground shadow and
-  silently skipped the sprite. Nothing threw. Regression passed. The simulation
-  was happy. Only looking at a screenshot caught it. There is now a check that
-  walks every sprite named anywhere in the data and asserts it loaded.
-- **The planting price took three attempts.** Too steep and plantings stall
-  while the bag fills; flat and the bag drains but bloom banks up. Both were
-  fixed by making the *bot* behave like a person — donate when the village
-  needs moving rather than on sight, and keep back what the next project needs.
-- **The arbiter found a hole in the instrument, not the game**: gifts were
-  consuming items that `outflow` never counted, so ~26% of everything gathered
-  left through an unnamed channel. Fixed after the verdict, along with
-  `utilisationPct` / `resourcesUnderUsed` (because `resourcesWithNoSink: []`
-  was passing a 96% waste rate as healthy) and grind measurement for the
-  project arc, which carried days 3–38 entirely unmeasured. **The next
-  `metrics.json` will therefore have fields v002's did not.**
-
-## What comes next
-
-**Take BACKLOG item 1 — repaint the home interior.** It is not the
-highest-scored item (items 2 and 3 are 5/5) but it is the right one:
-
-- Visual charm is the only axis that has not moved, and it is now the cheapest
-  point on the board.
-- The same defects have been named in **two consecutive scorecards**. An
-  optimisation loop that keeps deferring the cheap visible fix in favour of the
-  interesting systemic one is a loop with a blind spot, and this is that blind
-  spot showing up twice.
-- It is small enough to finish cleanly in one cycle, which items 2 and 3 are
-  not.
-
-Concretely: kill the dashed placement rectangle rendered inside the rug, give
-the rug a texture in the existing palette, replace the sans-serif "out" on the
-door with a mat or a step, commit the room to one projection, and draw Bodkin a
-portrait at portrait size instead of upscaling his world sprite.
-
-Check the interlock rule before starting — a pure repaint touches decorating
-only. **Reshape it so it touches two pillars**: the obvious way is to fold in
-BACKLOG item 4 (make the decorating sheet show the room it is decorating, and
-have villagers react to what is on show), which puts it on decorating +
-villagers. Do not skip this step to save effort; the rule is not negotiable.
+**Bloom is now two numbers.** `bloomEver` is a high-water mark that only ever
+rises and is the only thing growth is ever gated on; `bloom` is the purse you
+spend. There is a regression check named `spendingNeverUnbuilds` that grows the
+village, spends the well dry every way the game allows, and asserts the stage
+and the open areas are unchanged. **Do not remove it.**
 
 ## Things you would otherwise have to rediscover
 
@@ -125,59 +86,73 @@ villagers. Do not skip this step to save effort; the rule is not negotiable.
 `C:\Users\lfili\OneDrive\Documenti\app\Mossglen`.
 
 **The core loads in Node.** `src/mossglen.js` has no DOM above the
-`typeof document !== 'undefined'` guard, and exports via `module.exports`.
-That is what lets `tools/sim.js` play the real game. Keep it that way — the
-moment the core touches `document`, every metric becomes fiction.
+`typeof document !== 'undefined'` guard. That is what lets `tools/sim.js` play
+the real game. The moment the core touches `document`, every metric is fiction.
 
-**Everything routes through `listActions(S)`.** The tap handler and the
-simulation read the same list. If an action is not in there, it does not exist.
-Adding a feature means adding to that list, or the bot will never find it.
+**Everything routes through `listActions(S)`.** Tap handler and simulation read
+the same list. If an action is not in there it does not exist, and the bot will
+never find it.
 
 **Two lines are rewritten at freeze time** and asserted afterwards:
 `var VERSION = 'dev';` and `var ASSETS = '../assets/';`. Every archived version
 shares one origin on Pages, so an unnamespaced save key would corrupt the save
 of every older version in the gallery.
 
-**Sprites are ASCII in `tools/sprites.py`**, one shared 30-colour palette, saved
-at 1× so the canvas owns the zoom. The script hard-fails on a wrong row length
-and reports orphan pixels rather than silently cleaning them. Run
-`python tools/sprites.py` after editing; it rewrites all of `assets/`.
+**Sprites are ASCII in `tools/sprites.py`**, one shared palette, saved at 1× so
+the canvas owns the zoom. It hard-fails on a wrong row length and reports
+orphan pixels rather than silently cleaning them.
 
-**Never edit source after the measure phase starts.** The reports are the
-arbiter's only window into the game and must describe the build that got
-frozen. During bootstrap two slot names were renamed after screenshots were
-taken, so `reports/001/5-decorating.png` says "On the corner" where the frozen
-v001 says "On the rug". Harmless once; do not repeat it. **Freeze, then
-measure, then judge.**
+**Do not edit source once the measure phase has started.** Freeze, then
+measure, then judge. The reports are the arbiter's only window into the game
+and must describe the build that got frozen.
 
-**The preview pane cannot drive a `file://` page from outside the primary
-working directory** — it renders a static snapshot with no scripts. Serve over
-HTTP instead: the `mossglen` entry in `~/OneDrive/.claude/launch.json` serves
-the repo on port 8755. Playwright reaches `file://` fine, which is what the
-tools use.
+**Bash heredocs eat backslashes and quotes on this machine, sometimes
+silently.** Write source edits as a `.py` file in the scratchpad and run it,
+with an `assert` on every anchor. Two patches failed this way in cycle 3, one
+without saying so.
+
+**A partially-applied patch is the dangerous case.** When a multi-swap script
+asserts halfway through, the earlier swaps are already on disk. Write the
+follow-up with only the remaining swaps.
 
 **Commands:**
 
 ```bash
 python tools/sprites.py                      # regenerate assets/
-node tools/regression.js                     # 6233 checks against src/
+node tools/regression.js                     # 6287 checks against src/
 node tools/sim.js NNN                        # 5 seeds x 300 days -> reports/NNN/
-node tools/shots.js NNN                      # 5 fixed scenes at 390x844
+node tools/shots.js NNN                      # 7 fixed scenes at 390x844
 node tools/freeze.js NNN                     # src/ -> v/NNN/, stamps version
 node tools/regression.js "$PWD/v/NNN" NNN    # verify the frozen copy standalone
 ```
 
-**The arbiter is a subagent with a fresh context.** Give it exactly
-`PILLARS.md`, `RUBRIC.md`, `reports/NNN/metrics.json`, the five screenshots,
-`dialogue-sample.txt`, and the previous scorecard. Tell it explicitly not to
-open any source file. Withhold the diff, the backlog item name, and any
-explanation of what you were attempting — an arbiter that knows the goal judges
-whether you hit it, which is the wrong question.
+**The preview pane cannot drive a `file://` page from outside the primary
+working directory.** Serve over HTTP: the `mossglen` entry in
+`~/OneDrive/.claude/launch.json` serves the repo on port 8755. Playwright
+reaches `file://` fine, which is what the tools use.
+
+## Standing obligations for v004
+
+These are the arbiter's, not mine, and they are binding:
+
+1. **The grind rule.** `metrics.json` computes the grind veto as "more than 15
+   repetitions AND more than half of all progress actions in the window",
+   which is not the plain reading of `RUBRIC.md`. The arbiter cleared it once,
+   under conditions: the raw count restored as a co-equal criterion reported
+   alongside the share; `worstAbsoluteRepetition` must come **down** from 55,
+   and any version where it rises above 55 is an automatic rejection; and no
+   veto definition may be narrowed in the version where the narrowing is
+   load-bearing. Read the ruling in the scorecard before touching this.
+2. **The `finalStage` contradiction** must be visibly resolved in the metrics,
+   not renamed.
+3. **Per-playthrough dialogue reach is trending down** as lines are added —
+   98.2% in v002, lower now. The union across seeds is still complete, but
+   individual playthroughs are seeing less of the writing.
 
 ## Cycle discipline
 
-One backlog item per cycle. Verify the interlock rule before starting. If the
-arbiter rejects: `git reset --hard` to the previous tag, `git clean -fd` to
-remove the frozen directory, record why in `DECISIONS.md` under `## Dead ends`,
-and **take a different pillar next cycle** — do not retry a variation of the
-same idea. A rejected version is never pushed.
+One backlog item per cycle. Verify the interlock rule before starting — if the
+item touches one pillar, reshape it until it touches two, and do not skip that
+step to save effort. If the arbiter rejects: reset to the previous tag, record
+why under `## Dead ends`, and take a different pillar. A rejected version is
+never pushed.

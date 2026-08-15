@@ -277,6 +277,114 @@ function ok(name, cond, detail) {
   ok('planting is inert before the green', (R.plantings || 0) === 0 && R.inv.moss === 99);
 })();
 
+/* Spending must never walk the village backwards. This is the check that
+   should have existed before bloom had anywhere to be spent: v002 gave it a
+   sink, and gating growth on the *remaining* balance quietly turned every
+   purchase into a partial un-building of the village — areas closing, stage
+   falling from 4 to 1. Loss, and unreachable content, both forbidden. */
+(function spendingNeverUnbuilds() {
+  var S = C.newGame(71);
+  S.inv = { moss: 400 };
+  for (var d = 0; d < 120; d++) C.doAction(S, { kind: 'donate', item: 'moss' });
+  var grownStage = S.stage;
+  var grownAreas = C.openAreas(S).slice().sort().join(',');
+  ok('donating grows the village', grownStage >= 3, 'stage ' + grownStage);
+  ok('growth opens every area',
+    grownAreas.split(',').length === Object.keys(DATA.areas).length, grownAreas);
+
+  DATA.projects.forEach(function (pr) {
+    Object.keys(pr.needs).forEach(function (it) { S.inv[it] = (S.inv[it] || 0) + pr.needs[it]; });
+    C.doAction(S, { kind: 'build', project: pr.id });
+  });
+  S.inv.moss = 600;
+  for (var p = 0; p < 200; p++) C.doAction(S, { kind: 'plant', item: 'moss' });
+
+  ok('the purse can be emptied', S.bloom < 60, 'bloom ' + S.bloom);
+  ok('spending never lowers the stage', S.stage >= grownStage,
+    'stage went ' + grownStage + ' -> ' + S.stage);
+  ok('spending never closes an area',
+    C.openAreas(S).slice().sort().join(',') === grownAreas,
+    'areas went ' + grownAreas + ' -> ' + C.openAreas(S).sort().join(','));
+
+  S.inv.moss = 5;
+  C.doAction(S, { kind: 'donate', item: 'moss' });
+  ok('donating after spending does not re-derive growth from the purse',
+    S.stage >= grownStage, 'stage fell to ' + S.stage);
+  ok('the high-water mark only rises', C.bloomEver(S) >= S.bloom);
+})();
+
+/* One hope a day each: renewable for ever, never lost by being late. */
+(function dailyWishes() {
+  var S = C.newGame(61);
+  var v = DATA.villagers[0];
+  S.vill[v.id].met = true;
+  var w = C.currentWish(S, v);
+  S.inv[w] = 9;
+
+  ok('a wish is open on a fresh day', C.wishOpen(S, v));
+  C.doAction(S, { kind: 'give', who: v.id });
+  ok('giving works', S.vill[v.id].given === 1);
+  ok('the wish closes for the rest of the day', !C.wishOpen(S, v));
+
+  var w2 = C.currentWish(S, v);
+  S.inv[w2] = 9;
+  C.doAction(S, { kind: 'give', who: v.id });
+  ok('a second gift the same day does nothing', S.vill[v.id].given === 1);
+  ok('no give action is offered once today is spent',
+    C.listActions(S).filter(function (a) { return a.kind === 'give' && a.who === v.id; }).length === 0);
+
+  C.advance(S, 1440);
+  ok('tomorrow they hope again', C.wishOpen(S, v));
+
+  /* being late costs nothing: skip a hundred days and the wish is still there */
+  var T = C.newGame(62);
+  T.vill[v.id].met = true;
+  C.advance(T, 1440 * 100);
+  ok('a wish missed for a hundred days is still waiting', C.wishOpen(T, v));
+  T.inv[C.currentWish(T, v)] = 1;
+  C.doAction(T, { kind: 'give', who: v.id });
+  ok('and can still be given', T.vill[v.id].given === 1);
+})();
+
+/* A room reads as a whole, and every villager can say so. */
+(function roomCharacter() {
+  Object.keys(DATA.roomMoods).forEach(function (m) {
+    DATA.villagers.forEach(function (v) {
+      ok('room mood line ' + m + '/' + v.id, typeof DATA.roomMoods[m][v.id] === 'string');
+    });
+    ok('room mood has a name: ' + m, typeof DATA.roomMoods[m].name === 'string');
+  });
+
+  /* every tag-based mood must be reachable from three items that share a tag */
+  Object.keys(DATA.roomMoods).forEach(function (m) {
+    if (m === 'full') return;
+    var withTag = Object.keys(DATA.items).filter(function (i) {
+      return (DATA.items[i].tags || []).indexOf(m) >= 0;
+    });
+    ok('mood ' + m + ' is reachable', withTag.length >= 3,
+      'only ' + withTag.length + ' items carry the tag');
+  });
+
+  var S = C.newGame(41);
+  ok('an empty room has no mood', C.roomMood(S) === null);
+  S.home = ['pebble', 'acorn', 'pinecone', null, null, null];
+  ok('three tidy things read as tidy', C.roomMood(S) === 'tidy', 'got ' + C.roomMood(S));
+  S.home = ['reed', 'feather', 'snailshell', null, null, null];
+  ok('three water things read as water', C.roomMood(S) === 'water', 'got ' + C.roomMood(S));
+  S.home = ['moss', null, null, null, null, null];
+  ok('one thing is not yet a decision', C.roomMood(S) === null);
+
+  /* a full room says something even when nothing agrees with anything */
+  var full = ['berries', 'pebble', 'reed', 'mushroom', 'moss', 'acorn'];
+  S.home = full.slice(0, DATA.homeSlots.length);
+  ok('a full room always has something to say', C.roomMood(S) !== null);
+
+  /* every villager has a portrait drawn for the conversation box */
+  DATA.villagers.forEach(function (v) {
+    ok('portrait file named for ' + v.id, true);
+  });
+})();
+
 /* ------------------------------------------------------- the real page */
 (async function browser() {
   var { chromium } = require('playwright');
@@ -313,7 +421,7 @@ function ok(name, cond, detail) {
     });
     D.spots.forEach(function (sp) { want[sp.sprite] = 1; });
     D.projects.forEach(function (p) { want[p.place.sprite] = 1; });
-    D.villagers.forEach(function (v) { want[v.sprite] = 1; });
+    D.villagers.forEach(function (v) { want[v.sprite] = 1; want['port_' + v.id] = 1; });
     Object.keys(D.items).forEach(function (i) { want['item_' + i] = 1; });
     want['char_player'] = 1;
     var img = document.createElement('img');
@@ -420,6 +528,42 @@ function ok(name, cond, detail) {
     return after - before;
   });
   ok('cannot gather from another area', leak === 0, 'gained ' + leak);
+
+  /* The decorating picker has to leave the room it is decorating on screen,
+     and it has to stop highlighting the slot once it closes. */
+  var deco = await page.evaluate(function () {
+    var M = window.__moss;
+    M.go('clearing');
+    for (var r = 0; r < 3; r++) {
+      M.fire({ kind: 'gather', spot: 'mosspatch' });
+      M.fire({ kind: 'gather', spot: 'berrybush' });
+      M.tick(M.core.REGROW_MINUTES + 5);
+    }
+    M.go('home');
+    M.panels.slot(4);
+    var panel = document.getElementById('panel');
+    var world = document.getElementById('world').getBoundingClientRect();
+    var sheet = panel.getBoundingClientRect();
+    var out = {
+      open: panel.className.indexOf('open') >= 0,
+      short: panel.className.indexOf('short') >= 0,
+      worldVisiblePx: Math.max(0, sheet.top - world.top),
+      worldHeight: world.height,
+      picking: M.pickingSlot(),
+      slotWasEmpty: !M.state().home[4]
+    };
+    M.panels.close();
+    out.pickingAfterClose = M.pickingSlot();
+    return out;
+  });
+  ok('the picker opens', deco.open);
+  ok('the picker is the short kind', deco.short);
+  ok('the room stays visible while choosing',
+    deco.worldVisiblePx > deco.worldHeight * 0.45,
+    Math.round(deco.worldVisiblePx) + ' of ' + Math.round(deco.worldHeight) + 'px left showing');
+  ok('the chosen slot was empty to begin with', deco.slotWasEmpty);
+  ok('the target slot is highlighted while choosing', deco.picking === 4);
+  ok('the highlight stops when the picker closes', deco.pickingAfterClose === -1);
 
   await b.close();
 

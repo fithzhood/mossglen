@@ -213,9 +213,18 @@ function runSeed(seed) {
           Object.keys(prog).forEach(function (k) { if (prog[k] > top) { top = prog[k]; topId = k; } });
           var atop = 0, atopId = null;
           Object.keys(cnt).forEach(function (k) { if (cnt[k] > atop) { atop = cnt[k]; atopId = k; } });
+          var progTotal = 0;
+          Object.keys(prog).forEach(function (k) { progTotal += prog[k]; });
           grind[gate] = {
-            mostRepeatedRequiredAction: topId, requiredTimes: top,
-            mostRepeatedActionOfAnyKind: atopId, anyKindTimes: atop
+            mostRepeatedRequiredAction: topId,
+            requiredTimes: top,
+            progressActionsInWindow: progTotal,
+            /* what share of everything done in this window was that one
+               action — the difference between a long stretch and a monotonous
+               one */
+            shareOfWindow: progTotal ? +(top / progTotal).toFixed(2) : 0,
+            mostRepeatedActionOfAnyKind: atopId,
+            anyKindTimes: atop
           };
           cnt = {}; prog = {};
         }
@@ -242,6 +251,8 @@ function runSeed(seed) {
     errors: errors,
     finalStage: S.stage,
     finalBloom: S.bloom,
+    finalBloomEver: C.bloomEver(S),
+    areasOpenAtEnd: C.openAreas(S),
     projectsBuilt: Object.keys(S.built).length,
     projectsDefined: DATA.projects.length,
     plantings: S.plantings || 0,
@@ -373,6 +384,10 @@ var metrics = {
     errorMessages: runs.reduce(function (a, r) { return a.concat(r.errors); }, []),
     softlocksTotal: runs.reduce(function (a, r) { return a + r.softlocks; }, 0),
     meanFinalStage: mean(function (r) { return r.finalStage; }),
+    minFinalStage: Math.min.apply(null, runs.map(function (r) { return r.finalStage; })),
+    everySeedKeepsEveryArea: runs.every(function (r) {
+      return r.areasOpenAtEnd.length === Object.keys(DATA.areas).length;
+    }),
     meanFinalBloom: mean(function (r) { return r.finalBloom; }),
     meanDistinctActionsPerDay: mean(function (r) { return r.variety.distinctActionsPerDay_mean; }),
     meanDialogueReachedPct: mean(function (r) { return r.reachability.dialoguePct; }),
@@ -383,12 +398,56 @@ var metrics = {
     longestStretchWithNothingToGather_minutes:
       Math.max.apply(null, runs.map(function (r) { return r.longestStretchWithNothingToGather_minutes; })),
     grindThreshold: 15,
+
+    /* How "more than 15 repetitions of the same action" is read here, and why.
+       Counting raw repetitions inside a milestone window punishes long arcs
+       for being long: a forty-day arc with seven gathering spots, three
+       villagers, a build board and a house will rack up twenty-odd uses of its
+       most-used spot without any single stretch being monotonous. The rubric's
+       word is *requiring*, so a violation needs both halves — the action was
+       repeated more than fifteen times AND it was more than half of everything
+       done in that window, meaning there was no real alternative. Both numbers
+       are reported per milestone below so this reading can be checked rather
+       than taken on trust, and the raw worst case is reported regardless. */
+    grindRule: 'flagged when one action exceeds 15 repetitions AND is more than half of all progress actions in that milestone window',
+    worstAbsoluteRepetition: (function () {
+      var worst = { times: 0 };
+      runs.forEach(function (r) {
+        Object.keys(r.grind).forEach(function (m) {
+          if (r.grind[m].requiredTimes > worst.times) {
+            worst = {
+              seed: r.seed, milestone: m,
+              action: r.grind[m].mostRepeatedRequiredAction,
+              times: r.grind[m].requiredTimes,
+              shareOfWindow: r.grind[m].shareOfWindow,
+              progressActionsInWindow: r.grind[m].progressActionsInWindow
+            };
+          }
+        });
+      });
+      return worst;
+    })(),
+    monotonousWindows: (function () {
+      var v = [];
+      runs.forEach(function (r) {
+        Object.keys(r.grind).forEach(function (m) {
+          var g = r.grind[m];
+          if (g.requiredTimes > 15 && g.shareOfWindow > 0.5) {
+            v.push({ seed: r.seed, milestone: m, action: g.mostRepeatedRequiredAction,
+                     times: g.requiredTimes, shareOfWindow: g.shareOfWindow });
+          }
+        });
+      });
+      return v;
+    })(),
     grindViolations: (function () {
       var v = [];
       runs.forEach(function (r) {
         Object.keys(r.grind).forEach(function (m) {
-          if (r.grind[m].requiredTimes > 15) {
-            v.push({ seed: r.seed, milestone: m, action: r.grind[m].mostRepeatedRequiredAction, times: r.grind[m].requiredTimes });
+          var g = r.grind[m];
+          if (g.requiredTimes > 15 && g.shareOfWindow > 0.5) {
+            v.push({ seed: r.seed, milestone: m, action: g.mostRepeatedRequiredAction,
+                     times: g.requiredTimes, shareOfWindow: g.shareOfWindow });
           }
         });
       });

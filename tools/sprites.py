@@ -218,6 +218,96 @@ for nm, rows in (("player", player), ("pim", pim), ("marla", marla), ("bodkin", 
     orphan_report(nm, rows)
     made.append(save("char_" + nm, rows))
 
+# =============================================================== portraits
+# 20 x 24, for the conversation box. The world sprites are 16 x 22 and were
+# being blown up to 48 px wide, which left Bodkin's face about ten pixels
+# across and unreadable. These are drawn at the size they are shown.
+
+port_pim = [
+    "......#..#..#.......",
+    ".....#F##F##F#......",
+    "....#FFFFFFFFF#.....",
+    "...#FEFFFFFFFFG#....",
+    "..#FEEFFFFFFFFFG#...",
+    "..#FEFFFFFFFFFFG#...",
+    ".#JFFFFFFFFFFFFJ#...",
+    ".#JJJJJJJJJJJJJJ#...",
+    ".#JJJJJJJJJJJJJJ#...",
+    ".#J##JJJJJJJJ##J#...",
+    ".#J##JJJJJJJJ##J#...",
+    ".#JJJJJJJJJJJJJJ#...",
+    ".#JJJJJJKKJJJJJJ#...",
+    ".#JJJJJKKKKJJJJK#...",
+    ".#JJJJJJKKJJJJJK#...",
+    "..#JJJJJJJJJJJK#....",
+    "...#JJJJJJJJJK#.....",
+    "....##########......",
+    "...#444444444#......",
+    "..#4444444444F#.....",
+    ".#F444444444444#....",
+    ".#F4444444444FG#....",
+    ".#FF44444444FFG#....",
+    ".###############....",
+]
+
+port_marla = [
+    "....#######.........",
+    "...#XXXXXXX#........",
+    "..#XXXXXXXXX#.......",
+    "..#XXXXXXXXX#.......",
+    "..#X##XXXXXX#UU#....",
+    "..#X##XXXXXX#UUU#...",
+    "..#XXXXXXXXX#UUUU#..",
+    "..#XXXXXXXXX#UUU#...",
+    "..#XXXXXXXXX#UU#....",
+    "...#XXXXXXX#........",
+    "...#XXXXXXX#........",
+    "....#XXXXX#.........",
+    "....#XXXXX#.........",
+    "....#XXXXX#.........",
+    "....#XXOXX#.........",
+    "....#XXOXX#.........",
+    "...#XXXOOX#.........",
+    "..#XXXOOOOX#........",
+    ".#XXXOOOOOOQ#.......",
+    "#XXXOOOOOOOQQ#......",
+    "#XXOOOOOOOOQQ#......",
+    "#XXOOOOOOOOQQ#......",
+    "#XXXOOOOOOOQQ#......",
+    ".#############......",
+]
+
+port_bodkin = [
+    "....#########.......",
+    "...#ZZZZZZZZZ#......",
+    "..#ZZZZZZZZZZZ#.....",
+    ".#ZZZZZZZZZZZZZ#....",
+    ".#ZZZZZZZZZZZZZY#...",
+    ".#IIIIIIIIIIIIIY#...",
+    ".#IIIIIIIIIIIIII#...",
+    ".#I##IIIIIIII##I#...",
+    ".#I##IIIIIIII##I#...",
+    ".#IIIIIIIIIIIIII#...",
+    ".#IIIIIVVVVIIIIJ#...",
+    ".#IIIIVVVVVVIIIJ#...",
+    ".#IIIIVVVVVVIIIJ#...",
+    ".#IIIIIVVVVIIIIJ#...",
+    "..#IIIIIVVIIIIJ#....",
+    "...#IIIIIIIIIJ#.....",
+    "....##########......",
+    "...#MMMMMMMMM#......",
+    "..#MMMMMMMMMMN#.....",
+    ".#ZMMMMMMMMMMNZ#....",
+    ".#ZZZZZZZZZZZZZY#...",
+    ".#IZZZZZZZZZZZIY#...",
+    ".#IIZZZZZZZZZIIY#...",
+    ".###############....",
+]
+
+for nm, rows in (("pim", port_pim), ("marla", port_marla), ("bodkin", port_bodkin)):
+    orphan_report("port_" + nm, rows)
+    made.append(save("port_" + nm, rows))
+
 # ================================================================== items
 # 12 x 12, drawn to be told apart at a glance in a crowded bag grid.
 
