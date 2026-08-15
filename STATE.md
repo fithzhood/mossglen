@@ -7,11 +7,26 @@ of the last one. Written for a stranger, because that is what you are.*
 
 ## Where things stand
 
-**Current version: v001, accepted at 16/25. Tagged and pushed. Nothing is in
+**Current version: v002, accepted at 19/25. Tagged, pushed, live. Nothing is in
 progress and nothing is broken.** The next cycle starts clean at Phase 1.
 
-`16/25` is now the ratchet floor. v002 must total 17 or more or it is rejected,
+`19/25` is the ratchet floor. v003 must total 20 or more or it is rejected,
 regardless of how good it looks.
+
+Scores so far — v001 16/25, v002 19/25:
+
+| axis | v001 | v002 |
+|---|---|---|
+| A interlock | 3 | 4 |
+| B systemic health | 2 | 4 |
+| C visual charm | 3 | **3** |
+| D voice | 4 | 4 |
+| E session feel | 4 | 4 |
+
+**Read that C column.** Visual charm has not moved in two versions, and both
+scorecards say the same thing about why: the specific faults they named were
+never touched. B is nearly maxed and A is close. **C is where the remaining
+points are, and it is also the cheapest work on the board.**
 
 ## What the game currently is
 
@@ -41,38 +56,67 @@ four real minutes) and **only while the tab is visible**. Nothing decays, ever.
 
 ## What was just tried, and what happened
 
-Iteration 0: bootstrap. Repository, immutable documents, the whole tool chain,
-23 hand-authored sprites, and v001 itself. The arbiter accepted it at 16/25 and
-was right to be unimpressed — see `reports/001/scorecard.md`, which is worth
-reading in full before choosing anything.
+**v002 — village projects.** BACKLOG item 1 from v001's arbiter. The village
+board at the signpost: six projects, each proposed by a villager, each costing
+gathered material plus bloom, each placing a real object in the world — then
+the village green, which takes five of anything for ever.
 
-Three things the tooling caught that playing did not:
-- `fire()` compared every action field except `area`, and did not stop at the
-  first match, so "go inside" resolved to whichever travel action was last in
-  the list. Going home silently walked you to the pond.
-- `actGather` never checked the area, so the core allowed gathering a spot in
-  another place. The tap handler masked it.
-- The first dialogue ordering buried hints under item chatter, and five hint
-  lines were unreachable across all five seeds.
+It worked, on the numbers it was aimed at:
+
+| | v001 | v002 |
+|---|---|---|
+| items left unused after 300 days | 3,958.6 | 16 |
+| bloom overspill factor | 277.8 | 2.4 |
+| dialogue reached | 93.2% | 98.2% |
+| unreachable dialogue | 1 node | 0 |
+| worst required repetition (threshold 15) | 13 | 13 (median 13 → 8) |
+| last first-time milestone | day 3 | day 30–40 |
+
+The arbiter confirmed the arc was extended with content rather than padded with
+cost, which is the part that mattered.
+
+Three things worth knowing:
+- **Four new sprites were drawn, referenced by the project data, and never
+  added to the loader's list.** The renderer drew each one's ground shadow and
+  silently skipped the sprite. Nothing threw. Regression passed. The simulation
+  was happy. Only looking at a screenshot caught it. There is now a check that
+  walks every sprite named anywhere in the data and asserts it loaded.
+- **The planting price took three attempts.** Too steep and plantings stall
+  while the bag fills; flat and the bag drains but bloom banks up. Both were
+  fixed by making the *bot* behave like a person — donate when the village
+  needs moving rather than on sight, and keep back what the next project needs.
+- **The arbiter found a hole in the instrument, not the game**: gifts were
+  consuming items that `outflow` never counted, so ~26% of everything gathered
+  left through an unnamed channel. Fixed after the verdict, along with
+  `utilisationPct` / `resourcesUnderUsed` (because `resourcesWithNoSink: []`
+  was passing a 96% waste rate as healthy) and grind measurement for the
+  project arc, which carried days 3–38 entirely unmeasured. **The next
+  `metrics.json` will therefore have fields v002's did not.**
 
 ## What comes next
 
-**Take BACKLOG.md item 1 or item 2.** They are the arbiter's two 5/5 items and
-they are the same problem seen from two sides: the game is over in about twelve
-real minutes.
+**Take BACKLOG item 1 — repaint the home interior.** It is not the
+highest-scored item (items 2 and 3 are 5/5) but it is the right one:
 
-- Item 1 (village projects that keep consuming what you gather) adds a sink.
-- Item 2 (stretch the unlock arc from 3 in-game days to ~30) slows the drain.
+- Visual charm is the only axis that has not moved, and it is now the cheapest
+  point on the board.
+- The same defects have been named in **two consecutive scorecards**. An
+  optimisation loop that keeps deferring the cheap visible fix in favour of the
+  interesting systemic one is a loop with a blind spot, and this is that blind
+  spot showing up twice.
+- It is small enough to finish cleanly in one cycle, which items 2 and 3 are
+  not.
 
-Item 1 is the stronger pick — it touches three pillars and directly moves the
-two numbers the arbiter named. **If you take item 2, do it by spreading gates
-over time, not by raising costs**: `gather:hollowtree` already needs 13
-repetitions against a grind threshold of 15, so raising prices trips the veto.
+Concretely: kill the dashed placement rectangle rendered inside the rug, give
+the rug a texture in the existing palette, replace the sans-serif "out" on the
+door with a mat or a step, commit the room to one projection, and draw Bodkin a
+portrait at portrait size instead of upscaling his world sprite.
 
-One standing obligation regardless of what you pick: **`marla.home.feather` is
-a dialogue node no seed reaches.** The arbiter recorded it explicitly so it
-cannot later be waved through as pre-existing. If it survives v002 it counts as
-standing dead content.
+Check the interlock rule before starting — a pure repaint touches decorating
+only. **Reshape it so it touches two pillars**: the obvious way is to fold in
+BACKLOG item 4 (make the decorating sheet show the room it is decorating, and
+have villagers react to what is on show), which puts it on decorating +
+villagers. Do not skip this step to save effort; the rule is not negotiable.
 
 ## Things you would otherwise have to rediscover
 
@@ -116,7 +160,7 @@ tools use.
 
 ```bash
 python tools/sprites.py                      # regenerate assets/
-node tools/regression.js                     # 6117 checks against src/
+node tools/regression.js                     # 6233 checks against src/
 node tools/sim.js NNN                        # 5 seeds x 300 days -> reports/NNN/
 node tools/shots.js NNN                      # 5 fixed scenes at 390x844
 node tools/freeze.js NNN                     # src/ -> v/NNN/, stamps version

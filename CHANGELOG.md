@@ -4,6 +4,55 @@ Append-only. One entry per accepted version.
 
 ---
 
+## v002 — 2026-08-16
+
+**The village keeps having a next thing.**
+
+v001's whole content arc finished on in-game day 3 of a 300-day run, after
+which gathering fed nothing. v002 gives the back half of the pillar circle
+somewhere to put what the front half produces.
+
+- **The village board**, at the signpost. Six projects, each proposed by a
+  particular villager, each costing a real pile of gathered material plus
+  bloom, each putting a visible object in the world: a bench by the well, a bed
+  of flowers by your door, a lantern on the pond path, stepping stones across
+  the shallows, a second light for the hollow, and finally the village green.
+  They arrive in order, so there is always exactly one next thing.
+- **The village green** never closes. Five of anything goes into the ground for
+  ever, and the whole village visibly thickens up as it fills in — compare
+  `reports/002/1-village-morning.png` with `6-village-built.png`.
+- **Villagers propose and then react.** Whoever thought of the next project
+  brings it up the moment the last one is finished, which turns "gather more
+  things" into "Pim would like a bench" — the same request with a reason
+  attached.
+
+What moved, measured over 300 in-game days across five seeds:
+
+| | v001 | v002 |
+|---|---|---|
+| items left unused at end of run | 3,958.6 | **16** |
+| bloom overspill factor | 277.8 | **2.4** |
+| dialogue reached | 93.2% | **98.2%** |
+| unreachable dialogue nodes | 1 | **0** |
+| worst required repetition (threshold 15) | 13 | **8** |
+| last first-time milestone | day 3 | **day 34+** |
+
+The arc stretched without being padded: the worst repetition needed to reach a
+gate went *down* while the arc got roughly ten times longer.
+
+Four new sprites (bench, lantern, flowerbed, stepping stones), and a regression
+check that walks every sprite named anywhere in the data and asserts it loaded
+— because all four were drawn, referenced, and never registered with the
+loader, and nothing but a screenshot noticed.
+
+**Arbiter: 19/25** (from 16) — interlock 3→4, systemic health 2→4, visual charm
+3, voice 4, session feel 4. Accepted, ratchet cleared. The verdict is blunt
+about what did *not* move: every visual fault named in v001's scorecard is
+still on screen, and visual charm held only because the two new screens are
+good. That is v003's job.
+
+---
+
 ## v001 — 2026-08-16
 
 **The clearing, the well, and three neighbours.**

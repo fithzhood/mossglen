@@ -176,6 +176,105 @@ function ok(name, cond, detail) {
 
   ok('villagers feed village growth',
     DATA.villagers.every(function (v) { return v.wishes && v.wishes.length; }));
+
+  /* the projects edge: villagers propose, gathering pays, the world changes */
+  ok('villagers propose village projects',
+    DATA.villagers.every(function (v) {
+      return DATA.projects.some(function (p) { return p.by === v.id; });
+    }));
+  ok('projects consume gathered materials',
+    DATA.projects.every(function (p) { return Object.keys(p.needs).length > 0; }));
+  ok('projects put something in the world',
+    DATA.projects.every(function (p) { return p.place && p.place.sprite; }));
+  ok('the green consumes gathered things without limit',
+    DATA.planting.itemsEach > 0 && DATA.planting.bloomBase > 0);
+})();
+
+/* Village projects and the green: the sinks that stop bloom and the bag
+   becoming numbers that only go up. */
+(function projectsAndPlanting() {
+  DATA.projects.forEach(function (pr) {
+    ok('project has a proposer: ' + pr.id, !!C.villagerById(pr.by));
+    ok('project has a pitch: ' + pr.id, typeof pr.pitch === 'string' && pr.pitch.length > 10);
+    ok('project has a done line: ' + pr.id, typeof pr.done === 'string' && pr.done.length > 10);
+    ok('project places into a real area: ' + pr.id, !!DATA.areas[pr.place.area]);
+    ok('project costs bloom: ' + pr.id, pr.bloom > 0);
+    Object.keys(pr.needs).forEach(function (it) {
+      ok('project needs a real item: ' + pr.id + '/' + it, !!DATA.items[it]);
+      var inPool = DATA.spots.some(function (sp) {
+        return sp.pool.some(function (p) { return p[0] === it; });
+      });
+      ok('project material is gatherable: ' + pr.id + '/' + it, inPool);
+    });
+  });
+  ok('exactly one project opens the green',
+    DATA.projects.filter(function (p) { return p.unlocksPlanting; }).length === 1);
+
+  /* projects arrive in order and only in order */
+  var S = C.newGame(21);
+  var order = DATA.projects.map(function (p) { return p.id; });
+  for (var i = 0; i < order.length; i++) {
+    ok('next project is ' + order[i], C.nextProject(S).id === order[i]);
+    var out = C.listActions(S).filter(function (a) { return a.kind === 'build'; });
+    ok('no build offered without materials: ' + order[i], out.length === 0);
+    var pr = C.projectById(order[i]);
+    /* a later project cannot be built early even if you could pay for it */
+    if (i + 1 < order.length) {
+      var later = C.projectById(order[i + 1]);
+      var T = C.newGame(22);
+      T.bloom = 99999;
+      Object.keys(later.needs).forEach(function (it) { T.inv[it] = 999; });
+      C.doAction(T, { kind: 'build', project: later.id });
+      ok('cannot build out of order: ' + later.id, !T.built[later.id]);
+    }
+    S.bloom += pr.bloom;
+    Object.keys(pr.needs).forEach(function (it) { S.inv[it] = (S.inv[it] || 0) + pr.needs[it]; });
+    var offered = C.listActions(S).filter(function (a) { return a.kind === 'build'; });
+    ok('build offered once affordable: ' + order[i], offered.length === 1);
+    var bloomBefore = S.bloom;
+    C.doAction(S, { kind: 'build', project: order[i] });
+    ok('project got built: ' + order[i], !!S.built[order[i]]);
+    ok('build spent exactly its bloom: ' + order[i], S.bloom === bloomBefore - pr.bloom);
+    Object.keys(pr.needs).forEach(function (it) {
+      ok('build spent exactly its materials: ' + order[i] + '/' + it, !S.inv[it]);
+    });
+  }
+  ok('the list runs out but the green does not', C.nextProject(S) === null);
+  ok('the green is open once built', C.plantingOpen(S));
+
+  /* the green never closes and never runs out of room */
+  var P = C.newGame(23);
+  DATA.projects.forEach(function (p) { P.built[p.id] = 1; });
+  ok('planting needs the green', C.plantingOpen(P));
+  P.inv = { moss: 5000 };
+  P.bloom = 400000;
+  for (var n = 0; n < 400; n++) {
+    var before = P.plantings;
+    C.doAction(P, { kind: 'plant', item: 'moss' });
+    if (P.plantings !== before + 1) break;
+  }
+  ok('the green takes hundreds of plantings', P.plantings >= 400, 'stopped at ' + P.plantings);
+  ok('planting consumed the right number of items',
+    P.inv.moss === 5000 - 400 * DATA.planting.itemsEach, 'moss left ' + P.inv.moss);
+
+  /* and it refuses politely rather than going negative */
+  var Q = C.newGame(24);
+  DATA.projects.forEach(function (p) { Q.built[p.id] = 1; });
+  Q.inv = { moss: 2 };
+  Q.bloom = 0;
+  C.doAction(Q, { kind: 'plant', item: 'moss' });
+  ok('cannot plant without enough of a thing', Q.plantings === 0 && Q.inv.moss === 2);
+  Q.inv = { moss: 50 };
+  C.doAction(Q, { kind: 'plant', item: 'moss' });
+  ok('cannot plant without the bloom', Q.plantings === 0 && Q.bloom === 0);
+
+  /* a locked green offers nothing at all */
+  var R = C.newGame(25);
+  R.inv = { moss: 99 };
+  R.bloom = 9999;
+  ok('no planting before the green exists', C.plantableItems(R).length === 0);
+  C.doAction(R, { kind: 'plant', item: 'moss' });
+  ok('planting is inert before the green', (R.plantings || 0) === 0 && R.inv.moss === 99);
 })();
 
 /* ------------------------------------------------------- the real page */
@@ -203,6 +302,26 @@ function ok(name, cond, detail) {
   await page.reload();
   await page.waitForFunction('window.__moss && window.__moss.ready()', null, { timeout: 15000 });
   ok('boots through a corrupt save', true);
+
+  /* Every sprite the data names must actually be in the loader's list. A
+     missing one draws its shadow and nothing else, which is invisible until
+     somebody looks at a screenshot. */
+  var missing = await page.evaluate(function () {
+    var D = window.__moss.core.DATA, want = {};
+    Object.keys(D.areas).forEach(function (a) {
+      (D.areas[a].props || []).forEach(function (p) { want[p.sprite] = 1; });
+    });
+    D.spots.forEach(function (sp) { want[sp.sprite] = 1; });
+    D.projects.forEach(function (p) { want[p.place.sprite] = 1; });
+    D.villagers.forEach(function (v) { want[v.sprite] = 1; });
+    Object.keys(D.items).forEach(function (i) { want['item_' + i] = 1; });
+    want['char_player'] = 1;
+    var img = document.createElement('img');
+    return Object.keys(want).filter(function (n) {
+      return !window.__moss.spriteLoaded(n);
+    });
+  });
+  ok('every sprite the data names is loaded', missing.length === 0, missing.join(', '));
 
   var saveKeys = await page.evaluate(function () {
     window.__moss.fire({ kind: 'gather', spot: 'mosspatch' });

@@ -570,10 +570,77 @@ signpost = [
     "....######....",
 ]
 
+bench = [
+    "..................",
+    ".################.",
+    "#EEEEEEEEEEEEEEEE#",
+    "#FFFFFFFFFFFFFFFF#",
+    ".##############G#.",
+    "..#G#........#G#..",
+    ".################.",
+    "#EEEEEEEEEEEEEEEE#",
+    "#FFFFFFFFFFFFFFFF#",
+    ".#GG#......#GG#G#.",
+    ".#GG#......#GG#...",
+    ".#HH#......#HH#...",
+    ".####......####...",
+    "..................",
+]
+
+lantern = [
+    "....####....",
+    "...#GHHG#...",
+    "..##EFFE##..",
+    ".#UUUUUUUU#.",
+    "#UXXUUUUXU#.",
+    "#UXXUUUUUU#.",
+    "#UUUUUUUUU#.",
+    ".#UUUUUUU#..",
+    "..##EFFE##..",
+    "...#GFFG#...",
+    "...#GFFG#...",
+    "...#GFFG#...",
+    "...#GFFG#...",
+    "..#GFFGG#...",
+    "..#GGFGG#...",
+    ".##GGGGG##..",
+    ".#########..",
+]
+
+flowerbed = [
+    "...##....##.......",
+    "..#VU#..#UV#..##..",
+    ".#VVVU##UVVV##VW#.",
+    ".#VUVUBBUVUV#WVW#.",
+    "..#VU#BB#UV#.#WV#.",
+    "...#B##BB##B##BB#.",
+    "..#BABBBABBBABBB#.",
+    ".#BAABBBBAABBBBAB#",
+    "#BABBBCBBBBCBBBBB#",
+    "#BBBCCCBBBCCCBBBC#",
+    ".#CCCCCCCCCCCCCC#.",
+    "..#GGGGGGGGGGGG#..",
+    "..#HHHHHHHHHHHH#..",
+    "...############...",
+]
+
+bridge = [
+    "......................",
+    "..####....####....####",
+    ".#RRRR#..#RRRR#..#RRR#",
+    "#RRRRSS##RRRRSS##RRRSS",
+    "#RRSSSS##RRSSSS##RRSSS",
+    "#SSSSTT##SSSSTT##SSSTT",
+    ".#SSTT#..#SSTT#..#SSTT",
+    "..####....####....####",
+    "......................",
+]
+
 props = {
     "bush": bush, "bush_berries": bush_berries, "mossrock": mossrock,
     "stump": stump, "reeds": reeds, "tree": tree, "well": well,
     "house": house, "signpost": signpost,
+    "bench": bench, "lantern": lantern, "flowerbed": flowerbed, "bridge": bridge,
 }
 for nm, rows in props.items():
     orphan_report(nm, rows)

@@ -34,6 +34,18 @@ function gatherTimes(S, spot, n) {
 
 function setClock(S, day, hour) { S.day = day; S.minute = hour * 60; }
 
+/* Build the village up by actually paying for it, so a screenshot can never
+   show a state the game would not let you reach. */
+function buildUpTo(S, lastId) {
+  for (var i = 0; i < C.DATA.projects.length; i++) {
+    var pr = C.DATA.projects[i];
+    S.bloom += pr.bloom;
+    Object.keys(pr.needs).forEach(function (it) { S.inv[it] = (S.inv[it] || 0) + pr.needs[it]; });
+    C.doAction(S, { kind: 'build', project: pr.id });
+    if (pr.id === lastId) return;
+  }
+}
+
 var SCENES = [
   {
     name: '1-village-morning',
@@ -109,6 +121,34 @@ var SCENES = [
     },
     after: 'slot:5'
   }
+  ,{
+    name: '6-village-built',
+    build: function () {
+      return pose(function (S) {
+        gatherTimes(S, 'mosspatch', 4);
+        gatherTimes(S, 'berrybush', 3);
+        C.doAction(S, { kind: 'talk', who: 'pim' });
+        buildUpTo(S, 'green');
+        S.plantings = 60;
+        setClock(S, 34, 9);
+        S.area = 'clearing'; S.px = 78; S.py = 200;
+      });
+    }
+  },
+  {
+    name: '7-the-board',
+    build: function () {
+      return pose(function (S) {
+        gatherTimes(S, 'mosspatch', 5);
+        gatherTimes(S, 'berrybush', 4);
+        gatherTimes(S, 'oldstump', 4);
+        buildUpTo(S, 'bench');
+        setClock(S, 6, 13);
+        S.area = 'clearing';
+      });
+    },
+    after: 'panels.board'
+  }
 ];
 
 (async function () {
@@ -141,6 +181,8 @@ var SCENES = [
         await page.evaluate(function (n) { window.__moss.panels.slot(+n); }, sc.after.slice(5));
       } else if (sc.after === 'panels.bag') {
         await page.evaluate(function () { window.__moss.panels.bag(); });
+      } else if (sc.after === 'panels.board') {
+        await page.evaluate(function () { window.__moss.panels.board(); });
       }
     }
     await page.waitForTimeout(420);

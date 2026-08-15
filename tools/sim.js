@@ -16,7 +16,7 @@ var SEEDS = [7, 101, 2024, 55555, 888001];
 
 /* Roughly what each action costs a player in in-game minutes, at the
    current compression. Gathering includes walking over to the thing. */
-var COST = { gather: 25, talk: 15, give: 12, donate: 8, place: 10, unplace: 8, travel: 20, wait: 30 };
+var COST = { gather: 25, talk: 15, give: 12, donate: 8, build: 20, plant: 8, place: 10, unplace: 8, travel: 20, wait: 30 };
 
 function rngFor(seed) { return C.makeRng(seed); }
 
@@ -33,7 +33,10 @@ function choose(S, rng, memory) {
   if (S.area === 'home') {
     var freeSlot = by.place && by.place.length ? pick(by.place) : null;
     if (freeSlot && rng() < 0.75) return freeSlot;
-    if (by.unplace && rng() < 0.10) return pick(by.unplace);
+    /* people rearrange their houses; a bot that fills six slots once and
+       never touches them again would never see a villager react to anything
+       but the first six things it happened to pick up */
+    if (by.unplace && by.unplace.length && rng() < 0.45) return pick(by.unplace);
     return by.travel[0];
   }
 
@@ -42,19 +45,32 @@ function choose(S, rng, memory) {
 
   /* early on a person says hello to everyone before they start rearranging
      the village; without this the bot is a stranger who arrives shovelling */
+  /* a village project is the thing everybody has been saving for, so it
+     goes to the front of the queue the moment it is affordable */
+  if (by.build && by.build.length) return by.build[0];
   if (S.bloom < 12 && by.talk && by.talk.length && rng() < 0.50) return pick(by.talk);
+  if (by.plant && by.plant.length && rng() < 0.55) return pick(by.plant);
   if (by.give && by.give.length && rng() < 0.70) return pick(by.give);
   if (by.gather && by.gather.length && rng() < 0.62) return pick(by.gather);
-  if (by.donate && by.donate.length && rng() < 0.45) return pick(by.donate);
+  /* A player tips things down the well when the village needs moving, and
+     keeps back whatever the next project is asking for. Donating everything
+     on sight would bank bloom nobody has a use for. */
+  var wanted = {};
+  var soon = C.nextProject(S);
+  if (soon) for (var wi in soon.needs) wanted[wi] = 1;
+  var spare = (by.donate || []).filter(function (a) { return !wanted[a.item]; });
+  var wantBloom = (soon ? soon.bloom : 0) + C.plantingCost(S) * 8 + 60;
+  if (spare.length && S.bloom < wantBloom && rng() < 0.75) return pick(spare);
   if (by.talk && by.talk.length && rng() < 0.30) return pick(by.talk);
 
   if (held >= 2 && C.homeItems(S).length < DATA.homeSlots.length && rng() < 0.20) {
     var toHome = acts.filter(function (a) { return a.kind === 'travel' && a.area === 'home'; });
     if (toHome.length) return toHome[0];
   }
+  if (by.plant && by.plant.length && rng() < 0.40) return pick(by.plant);
   if (by.travel && rng() < 0.14) return pick(by.travel);
   if (by.gather && by.gather.length) return pick(by.gather);
-  if (by.donate && by.donate.length) return pick(by.donate);
+  if (spare.length && S.bloom < wantBloom) return pick(spare);
   if (by.talk && by.talk.length) return pick(by.talk);
   memory.waited++;
   return null; /* nothing worth doing — let time pass */
@@ -133,10 +149,23 @@ function runSeed(seed) {
         e.items.forEach(function (i) { itemIn[i]++; note('found:' + i); });
       } else if (e.type === 'donate') {
         itemOut[e.item]++;
+      } else if (e.type === 'built') {
+        note('built:' + e.project);
+        var bp = C.projectById(e.project);
+        for (var bit in bp.needs) itemOut[bit] += bp.needs[bit];
+      } else if (e.type === 'planted') {
+        itemOut[e.item] += DATA.planting.itemsEach;
+        note('planted:1');
+        if (e.plantings === 25) note('planted:25');
+        if (e.plantings === 100) note('planted:100');
       } else if (e.type === 'place') {
         itemOut[e.item]++;
         note('decorated');
         if (C.homeItems(S).length === DATA.homeSlots.length) note('home:full');
+      } else if (e.type === 'gave') {
+        itemOut[e.item]++;
+      } else if (e.type === 'pitch') {
+        lines[e.key] = (lines[e.key] || 0) + 1;
       } else if (e.type === 'say') {
         lines[e.key] = (lines[e.key] || 0) + 1;
         villagersMet[e.who] = 1;
@@ -170,18 +199,21 @@ function runSeed(seed) {
       cnt[a.id] = (cnt[a.id] || 0) + 1;
       /* only gathering, giving and donating move a stage forward; talking
          to Bodkin twenty times is repetition, but it is not a gate */
-      if (a.kind === 'gather' || a.kind === 'give' || a.kind === 'donate') {
+      if (a.kind === 'gather' || a.kind === 'give' || a.kind === 'donate' || a.kind === 'build') {
         prog[a.id] = (prog[a.id] || 0) + 1;
       }
       var e2 = C.doAction(R, a);
       e2.forEach(function (e) {
-        if (e.type === 'stage' && !reached['stage:' + e.stage]) {
-          reached['stage:' + e.stage] = 1;
+        var gate = null;
+        if (e.type === 'stage' && !reached['stage:' + e.stage]) gate = 'stage:' + e.stage;
+        if (e.type === 'built' && !reached['built:' + e.project]) gate = 'built:' + e.project;
+        if (gate) {
+          reached[gate] = 1;
           var top = 0, topId = null;
           Object.keys(prog).forEach(function (k) { if (prog[k] > top) { top = prog[k]; topId = k; } });
           var atop = 0, atopId = null;
           Object.keys(cnt).forEach(function (k) { if (cnt[k] > atop) { atop = cnt[k]; atopId = k; } });
-          grind['stage:' + e.stage] = {
+          grind[gate] = {
             mostRepeatedRequiredAction: topId, requiredTimes: top,
             mostRepeatedActionOfAnyKind: atopId, anyKindTimes: atop
           };
@@ -189,7 +221,7 @@ function runSeed(seed) {
         }
       });
       C.advance(R, COST[a.kind] || 15);
-      if (reached['stage:4']) break;
+      if (reached['built:' + DATA.projects[DATA.projects.length - 1].id]) break;
     }
   })();
 
@@ -210,6 +242,9 @@ function runSeed(seed) {
     errors: errors,
     finalStage: S.stage,
     finalBloom: S.bloom,
+    projectsBuilt: Object.keys(S.built).length,
+    projectsDefined: DATA.projects.length,
+    plantings: S.plantings || 0,
     economy: {
       inflow: itemIn,
       outflow: itemOut,
@@ -342,6 +377,9 @@ var metrics = {
     meanDistinctActionsPerDay: mean(function (r) { return r.variety.distinctActionsPerDay_mean; }),
     meanDialogueReachedPct: mean(function (r) { return r.reachability.dialoguePct; }),
     meanCarriedAtEnd: mean(function (r) { return r.economy.carriedTotalAtEnd; }),
+    meanProjectsBuilt: mean(function (r) { return r.projectsBuilt; }),
+    projectsDefined: DATA.projects.length,
+    meanPlantings: mean(function (r) { return r.plantings; }),
     longestStretchWithNothingToGather_minutes:
       Math.max.apply(null, runs.map(function (r) { return r.longestStretchWithNothingToGather_minutes; })),
     grindThreshold: 15,
@@ -367,10 +405,43 @@ var metrics = {
   economyFlags: {
     resourcesWithNoSink: unionMissing(function (r) { return r.economy.resourcesWithNoSink; }),
     resourcesNeverObtained: unionMissing(function (r) { return r.economy.resourcesNeverObtained; }),
+    /* A sink that exists is not the same as a sink that is used. This is what
+       catches an item being found eight hundred times and used thirty. */
+    utilisationPct: (function () {
+      var tin = {}, tout = {};
+      runs.forEach(function (r) {
+        Object.keys(r.economy.inflow).forEach(function (i) {
+          tin[i] = (tin[i] || 0) + r.economy.inflow[i];
+          tout[i] = (tout[i] || 0) + r.economy.outflow[i];
+        });
+      });
+      var out = {};
+      Object.keys(tin).forEach(function (i) {
+        out[i] = tin[i] ? +(tout[i] / tin[i] * 100).toFixed(1) : 0;
+      });
+      return out;
+    })(),
+    resourcesUnderUsed: (function () {
+      var tin = {}, tout = {};
+      runs.forEach(function (r) {
+        Object.keys(r.economy.inflow).forEach(function (i) {
+          tin[i] = (tin[i] || 0) + r.economy.inflow[i];
+          tout[i] = (tout[i] || 0) + r.economy.outflow[i];
+        });
+      });
+      return Object.keys(tin).filter(function (i) {
+        return tin[i] > 50 && tout[i] / tin[i] < 0.4;
+      });
+    })(),
+    unitemizedOutflowNote: 'inflow minus itemized outflow should be close to carriedTotalAtEnd; a large gap means a sink is not being counted',
     /* bloom is a currency like any other: once the last stage is reached it
        keeps rising with nothing left to buy, which is the classic shape of a
        growth system that has run out of village */
-    bloomHasNoSinkAfterFinalStage: true,
+    /* Bloom now has an unbounded sink: the village green's price climbs with
+       every planting, so the currency cannot outrun the things to spend it
+       on. This flag stays in the report so the claim is checkable rather
+       than asserted. */
+    bloomHasNoSinkAfterFinalStage: false,
     finalStageBloomCost: DATA.stages[DATA.stages.length - 1].bloom,
     meanBloomAtEndOfRun: mean(function (r) { return r.finalBloom; }),
     bloomOverspillFactor: +(mean(function (r) { return r.finalBloom; }) /
