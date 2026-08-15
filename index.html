@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3b5430">
+<title>Mossglen — versions</title>
+<style>
+  :root {
+    --ink: #2b2133;
+    --paper: #f3ead6;
+    --paper-2: #e6d9bd;
+    --moss: #4d6b3c;
+    --moss-2: #3b5430;
+    --bark: #6c4c31;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--moss-2); color: var(--ink); }
+  body {
+    font: 16px/1.5 ui-rounded, "Segoe UI", system-ui, -apple-system, sans-serif;
+    padding: 0 0 40px;
+  }
+  header {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 34px 20px 18px;
+    color: #f0e7d2;
+  }
+  header h1 { margin: 0; font-size: 30px; letter-spacing: .01em; }
+  header p { margin: 8px 0 0; opacity: .78; font-size: 15px; max-width: 46ch; }
+  main { max-width: 620px; margin: 0 auto; padding: 0 14px; }
+  .v {
+    display: block;
+    margin: 10px 0;
+    padding: 16px 18px;
+    background: var(--paper);
+    border-radius: 14px;
+    border-bottom: 4px solid rgba(43,33,51,.18);
+    color: inherit;
+    text-decoration: none;
+  }
+  .v:hover { background: #f8f1e0; }
+  .v:active { transform: translateY(1px); }
+  .top { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .n { font-weight: 700; font-size: 20px; }
+  .d { font-size: 13px; opacity: .6; }
+  .s {
+    margin-left: auto;
+    font-size: 13px;
+    font-weight: 700;
+    background: var(--moss);
+    color: #f6ecd6;
+    border-radius: 10px;
+    padding: 3px 10px;
+    white-space: nowrap;
+  }
+  .c { margin: 7px 0 0; font-size: 15px; }
+  footer {
+    max-width: 620px;
+    margin: 26px auto 0;
+    padding: 0 20px;
+    color: #cfdcc2;
+    font-size: 13px;
+    opacity: .75;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mossglen</h1>
+  <p>A cozy village, rebuilt a little at a time. Every version below was judged
+     before it was kept. Newest first — open two of them side by side.</p>
+</header>
+
+<main id="list">
+
+  <a class="v" href="v/001/mossglen.html">
+    <span class="top">
+      <span class="n">v001</span>
+      <span class="d">2026-08-16</span>
+      <span class="s">16/25</span>
+    </span>
+    <p class="c">The clearing, the well, and three neighbours: gather things,
+       furnish your house with them, give them to whoever was hoping for one,
+       and watch the village open up.</p>
+  </a>
+
+</main>
+
+<footer>
+  Each version keeps its own save. Opening a new one never disturbs an old one.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#3f5240">
+<title>Mossglen</title>
+<link rel="stylesheet" href="mossglen.css">
+</head>
+<body>
+
+<div id="app">
+
+  <header id="hud">
+    <span id="day">Day 1</span>
+    <span id="where">The Clearing</span>
+  </header>
+
+  <div id="stage">
+    <canvas id="world" width="176" height="192" aria-label="Mossglen"></canvas>
+  </div>
+
+  <p id="log">…</p>
+
+  <nav id="bar">
+    <button id="bag" type="button"><b>Bag</b><small>what you carry</small></button>
+    <button id="well" type="button"><b>Well</b><small>give something</small></button>
+    <button id="places" type="button"><b>Go</b><small>somewhere else</small></button>
+  </nav>
+
+  <section id="panel" class="panel"></section>
+  <div id="say" class="say"></div>
+
+</div>
+
+<script src="mossglen-data.js"></script>
+<script src="mossglen.js"></script>
+</body>
+</html>
