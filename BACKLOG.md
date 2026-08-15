@@ -4,124 +4,122 @@ Candidate directions. Never empty — if this drops below five items, the next
 arbiter session opens a new axis of evaluation and refills it.
 
 Each item states which pillars it connects. Anything touching fewer than two is
-not eligible to be picked, and should be reshaped or dropped.
+not eligible; reshape it until it does, or drop it.
 
 Scores are the arbiter's expected value, 1–5.
 
 ---
 
+## Binding on v004 — not optional, not scored
+
+**The grind rule must be repaired before anything else ships.** The arbiter
+cleared the narrowed definition once, spent the clearance, and ruled:
+
+> v004 that reports `worstAbsoluteRepetition` at or above 55, or that still
+> computes `grindViolations` under the conjunct alone, is a rejection on the
+> grind veto with no further argument entertained.
+
+Two things are required, and the second is a game change, not a metrics change:
+
+1. `grindViolations` must apply the raw count as a **co-equal** criterion
+   alongside the share, not merely report it. Reporting a number you have
+   defined out of the test is not restoring it.
+2. `worstAbsoluteRepetition` must come **down** from 55
+   (`gather:berrybush`, seed 888001, `built:steppingstones`, 279-action
+   window). It did not move during the v003 regeneration, and the arbiter
+   noticed.
+
+The arbiter also named the number to chase first, which no rule currently
+tests at all: **`talk:marla` 65 times inside one project window.** Sixty-five
+conversations in seven in-game days is the repetition a player actually feels.
+
+---
+
 ## Ranked
 
-### 1. Repaint the home interior *(4/5 — arbiter, raised twice: v001 and v002)*
-**Pillars: decorating + villagers.**
+### 1. The game is over on day 16 *(5/5 — arbiter, v003)*
+**Pillars: village growth + gathering + villagers.**
 
-**This has now been raised in two consecutive scorecards and is the cheapest
-item on the list. Visual charm is the only axis that has not moved in two
-versions, and it has not moved because nothing named here was touched.**
+Stage is terminal on in-game day 2–3. All six projects finish by day 17 — v002
+reached day 38, so this got *worse*. The board then has nothing left to
+display for 284 days, and the silence now shows up as a number:
+`meanCarriedAtEnd` went 58 → **691.8** inside a single version, with
+`carriedEvery10Days` climbing to 554–828 and **no plateau in any seed**, and
+moss falling out of the healthy band to `utilisationPct: 79.4`.
 
-In `reports/002/4-home-interior.png`, during ordinary play:
-- The rug has a **dashed white placement rectangle rendered permanently inside
-  it** — it reads unmistakably as a debug drop-target. Make it a selection or
-  hover state, not a decal.
-- The rug is **the only flat, untextured, off-palette object in the build**.
-  Give it a woven texture inside the existing green/brown/cream ramp.
-- The door carries **"out" in white sans-serif baked onto it**. Replace with a
-  mat or a step.
-- **Four projections in one room**: window, picture and shelves in elevation;
-  bed and rug top-down; table in side view carrying a top-down moss ball; a
-  door standing up in elevation out of a top-down floor. Commit to one.
+The green absorbs material but produces no milestone, no board entry and no
+line after `planted:100`. Give the back half of the game named, growing goals
+on the board — a meadow, an orchard, a lantern route — with a threshold every
+few hundred plantings that changes the clearing visibly and gets a villager
+line. Target: a new named milestone every 20 in-game days out to day 200, and
+`carriedEvery10Days` that plateaus.
 
-Also: Bodkin's conversation portrait in `3-conversation.png` is still an
-upscaled world sprite with a pink smear across the lower face and no readable
-eyes at portrait size. A villager needs a portrait drawn at portrait size.
+### 2. Itemize where the bloom goes *(4/5 — arbiter, v003)*
+**Pillars: village growth + gathering.**
 
-### 2. A growing display for rare finds *(5/5 — arbiter, v002)*
-**Pillars: gathering + decorating + villagers (+ growth at village scale).**
+Roughly **18,800 bloom is earned per seed and 0–18 is held at the end**, while
+the only itemized sinks in the file are six projects and a
+`finalStageBloomCost: 140`. `bloomHasNoSinkAfterFinalStage: false` asserts a
+sink exists but never names it.
 
-Glass bead is found 740–798 times per seed and used 32–59. Feather is found
-518–578 and used 66–127. Both are the best-drawn items in the game, and the
-glass bead is already sitting on a shelf in `4-home-interior.png` — the art has
-already decided they are display objects.
+This is the same shape of unnamed channel as v002's 26% item leak — which is
+exactly the shape that hid a hard-veto loss bug for two whole versions. An
+unitemized flow is where defects live. Report bloom inflow and outflow by
+source the way items already are.
 
-Add a case or mantel that accepts rare finds in quantity, gains a new tier each
-time it fills, and gives each villager a line keyed to what is currently on
-show.
-
-Target: glassbead and feather outflow above 40% of inflow. `utilisationPct` and
-`resourcesUnderUsed` are now in `metrics.json` to measure exactly this —
-`resourcesWithNoSink: []` was passing a 96% waste rate as healthy.
-
-### 3. Make the last 260 days acknowledge themselves *(5/5 — arbiter, v002)*
-**Pillars: villagers + village growth + gathering.**
-
-Every seed performs ~1,600 plantings. The last recorded milestone is
-`planted:100` on days 30–40. The ~1,500 that follow register nowhere — no
-milestone, no board entry, no line.
-
-Put planting on the board as a named, growing goal — a meadow, an orchard, a
-lantern route along the pond path — with a threshold every few hundred that
-adds a visible change beyond the current flower density and triggers a villager
-line.
-
-Target: at least one new named milestone every 20 in-game days out to day 200.
-
-### 4. Let the decorating sheet show what is being decorated *(4/5 — arbiter, raised twice)*
-**Pillars: decorating + villagers.**
-
-`5-decorating.png` is titled "On the rug" while the rug sits entirely beneath
-the sheet, so the player picks blind — the identical failure v001 recorded as
-"On the corner". Naming the target while hiding it is, if anything, more
-conspicuous than v001 was.
-
-Replace the full-height grid with a single pinned scrollable row, keep the
-target spot visible and highlighted in the room above, and ghost the selected
-item into place before confirming.
-
-This matters more than it looks: `home:full` lands on in-game day 1 in three of
-five seeds and the finished interior holds about five placed objects, so the
-one screen where decorating happens is seen once and never rewards returning.
-
-### 5. Queue stage reactions, and split the repeat lines *(3/5 — arbiter, v002)*
-**Pillars: villagers + village growth.**
-
-`marla.stage.2` is never seen in 4 of 5 seeds and `bodkin.stage.2` in 3 of 5,
-because stages 2 and 3 both complete on in-game day 1 and the reaction is
-superseded before the player next talks to anyone. Hold stage reactions in a
-queue that survives a stage change.
-
-In the same pass, break the duplicates: Bodkin's "Ohh, it's got the spots and
-everything" fires on days 36 and 38 — two consecutive appearances — and
-Marla's "It's lighter than it looks" on days 11 and 31. Both are `thanks`
-lines, which recur because wishes cycle; they need variants. The sample's
-unique-line rate is 12 of 14, exactly what it was in v001: the repetition was
-redistributed between characters, not reduced.
-
-### 6. Decorating saturates on day 1 *(—)*
-**Pillars: decorating + gathering.**
-
-Six slots, filled on the first day in three of five seeds, and never a reason
-to return. Decorating is the pillar whose job is to absorb what gathering
-produces, and it is exactly as short as it was in v001. Overlaps with items 2
-and 4 — do those first and re-measure before designing more slots.
-
-### 7. Villagers who notice each other, not only you *(—)*
+### 3. Marla is the villager nobody hears *(4/5 — arbiter, v003)*
 **Pillars: villagers + decorating.**
 
-Pim, Marla and Bodkin never refer to one another. Three people in a clearing
-with no opinions about each other read as three vending machines.
+Marla gets 2 lines of 14 in the sample against Pim's 8, and she is also the
+villager most often unheard in the data: `marla.stage.2`, `marla.hint.hollow`
+and `marla.room.water` are each missed by 4 of 5 seeds.
 
-### 8. The three areas look like one area with different props *(—)*
+Underneath it, **per-playthrough dialogue reach is falling and accelerating**:
+98.18 (v002) → 96.86 → **94.98**, worst seed 91.2%, and the newest lines land
+in the least-reachable slots. The union across seeds is still complete, so no
+veto fires — but every individual playthrough is seeing less of the writing
+than the one before, which is the trend that matters.
+
+Two fixes, both cheap: hold stage reactions in a queue that survives the next
+stage change (stages 2 and 3 both complete on day 1, so those lines are
+superseded before anyone is spoken to), and make villager encounter rates even
+rather than a function of who happens to stand nearest the player's start.
+
+### 4. Recolour the door mat *(3/5 — arbiter, v003)*
+**Pillars: decorating + villagers.**
+
+The one visual fault still standing after three versions. It is lavender in a
+cream-and-brown room, it is the only off-palette object left in the build, it
+sits on the wall/floor seam, and it is clipped by the right edge of the panel.
+It inherited the old rug's colours when it replaced it. Put it in the existing
+green/brown/cream ramp and move it clear of the seam.
+
+### 5. Prove a late session is pleasant, not just the tutorial *(3/5 — arbiter, v003)*
+**Pillars: session feel — measurement, so pair it with a real change.**
+
+For the third consecutive version every three-minute sample is taken at
+`inGameDaysElapsed: 0.75` and every quoted line is a first meeting. The
+artifacts only ever prove the tutorial is pleasant. Sample a cold three-minute
+session at day 30 and day 100 as well. Seed 888001 also still reports
+`decorated: false`.
+
+### 6. Villagers who notice each other *(—)*
+**Pillars: villagers + decorating.**
+
+Pim, Marla and Bodkin still never refer to one another.
+
+### 7. The three areas are one area with different props *(—)*
 **Pillars: gathering + village growth.**
 
 Clearing, pond path and hollow share a ground routine with a tint swap.
 
-### 9. Weather *(—)*
+### 8. Weather *(—)*
 **Pillars: gathering + villagers.**
 
 Rain that changes what the spots yield and gives every villager something new
 and specific to say.
 
-### 10. Nothing to do at night but the same things *(—)*
+### 9. Nothing to do at night but the same things *(—)*
 **Pillars: gathering + villagers.**
 
 Night changes the palette and the idle lines, and that is all.
@@ -130,13 +128,12 @@ Night changes the palette and the idle lines, and that is all.
 
 ## Held for later
 
-- **Sound.** No audio at all yet.
-- **One three-minute session sample ended without decorating** (seed 888001).
-  Minor, but the session-shape probe only samples from day 1, which is not
-  where the doubt is — sample a cold session at day 30 and day 100 too.
-- **Canvas scale wastes width on short, wide viewports.** 90% of the width on a
-  390 × 844 phone, about 57% on a 678 × 730 window. Deliberate — see
-  DECISIONS.md. Revisit only if density is scored down.
-- **Save-slot migration.** `SAVE_V` is still 1. The v002 save added `built` and
-  `plantings`; the loader tolerates their absence. The first change that
+- **Sound.** Still no audio at all.
+- **Bodkin's portrait** is legible now but still the world-sprite design — a
+  lilac blob for a mouth and a stray beige column across the jaw.
+- **Canvas scale wastes width on short, wide viewports.** 90% on a 390 × 844
+  phone, ~57% on a 678 × 730 window. Deliberate — see DECISIONS.md.
+- **Save migration.** `SAVE_V` is still 1. v003 added `bloomEver`, `built`,
+  `plantings` and `wishDay`; the loader tolerates all of them being absent and
+  back-fills `bloomEver` from the recorded stage. The first change that
   genuinely invalidates a save will need a real migration.
