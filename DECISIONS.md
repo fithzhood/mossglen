@@ -333,6 +333,50 @@ is the useful one: *structure without content*. A milestone that places no
 object, says nothing new and draws no extra material out of the bag is a label
 on something that was already happening.
 
+---
+
+## Cycle 6 - v006, queued reactions. REJECTED 18/25.
+
+Took the arbiter's top item: villager reactions were computed from current state
+whenever you next spoke to somebody, so they were routinely destroyed before
+delivery. Queued them at the moment the event happens instead.
+
+**The mechanism works and was verified independently.** marla.stage.2 went from
+missed by 4 of 5 seeds to 1, closing a supersession defect five versions old.
+Also added mostRepeatedActionPerInGameDay and restored the grind rule to the
+plain reading of RUBRIC.md, both overdue.
+
+**Rejected on the ratchet: A and D each fell a point.** The arbiter's finding is
+the sharp one: the queue fixed *delivery*, but two of the three reaction
+families were failing at *triggering*. home.* came out byte-identical to v005
+and the three room.water lines went 3/5 to 4/5 missed. I rebuilt the delivery
+half without checking whether the other two families ever fired, and shipped
+without measuring the thing the cycle was aimed at.
+
+**Deviation from the cycle rules, recorded deliberately.** The rules say reset
+and take a different pillar. The verdict says in the strongest terms not to
+revert the queue - that it is the right mechanism, two-thirds built, and that
+discarding it would repeat v004 exactly. So: main is reset to v005 and nothing
+rejected is on it, and the work is parked on branch `rejected/v006` rather than
+destroyed. v007 rebuilds from there.
+
+**Standing rule, binding from v007: grind is a rate.** The veto fires if
+mostRepeatedActionPerInGameDay >= 15, or any action exceeds 0.35 shareOfWindow
+in a window of >= 20 actions, or monotonousWindows is non-empty. Raw counts gate
+nothing in either direction. And the ruling behind it, now permanent:
+**restoring an instrument is neutral** - it earns no credit and grants no
+amnesty; judge the behaviour it reveals, never its history.
+
+**New finding nobody had flagged:** every grind window closes by in-game day 17,
+so the instrument is blind to 95% of the run, including 1,106 unmeasured
+plantings.
+
+### The pattern, three cycles running
+
+v004 fixed the back half and lost C and D. v005 fixed C and D and tied. v006
+fixed delivery and lost A and D. Each time the named item was fixed and the
+version was not checked as a whole against all five axes before shipping.
+
 ## Dead ends
 
 *(nothing yet)*

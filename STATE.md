@@ -7,67 +7,52 @@ of the last one. Written for a stranger, because that is what you are.*
 
 ## Where things stand
 
-**Current version: v005, accepted at 20/25. Tagged, pushed, live. Working tree
-clean, nothing in progress.** The next cycle starts at Phase 1.
+**Current version: v005, accepted at 20/25. Tagged, pushed, live. `main` is
+clean at that tag.**
 
-`20/25` is the ratchet floor and v005 tied it exactly, with zero margin. v006
-must total **21 or more**.
+**v006 was REJECTED at 18/25.** It is NOT on main. It is parked on branch
+`rejected/v006`, deliberately, because the verdict says not to revert the queue
+it built. Its scorecard is at `reports/006-rejected-scorecard.md` and its
+rulings bind v007.
 
-| axis | v001 | v002 | v003 | v004 (rejected) | v005 |
-|---|---|---|---|---|---|
-| A interlock | 3 | 4 | 4 | 4 | 4 |
-| B systemic health | 2 | 4 | 4 | 4 | 4 |
-| C visual charm | 3 | 3 | 4 | 3 | 4 |
-| D voice | 4 | 4 | 4 | 3 | 4 |
-| E session feel | 4 | 4 | 4 | 4 | 4 |
-| **total** | 16 | 19 | **20** | 18 | **20** |
+`20/25` is the ratchet floor. v007 must total **21 or more**.
 
-Two versions in a row at 20. Every axis is 4 and none has ever been a 5. **The
-next point has to come from making one axis genuinely excellent**, and the
-arbiter has said plainly which item does that: BACKLOG item 1 closes A, B and D
-at once.
+| axis | v001 | v002 | v003 | v004 (rej) | v005 | v006 (rej) |
+|---|---|---|---|---|---|---|
+| A | 3 | 4 | 4 | 4 | 4 | 3 |
+| B | 2 | 4 | 4 | 4 | 4 | 4 |
+| C | 3 | 3 | 4 | 3 | 4 | 4 |
+| D | 4 | 4 | 4 | 3 | 4 | 3 |
+| E | 4 | 4 | 4 | 4 | 4 | 4 |
+| **total** | 16 | 19 | **20** | 18 | **20** | 18 |
 
-## What was just tried, and what happened
+## Read this before choosing anything
 
-**v005 - voice and the room.** Taken because v004 was rejected on those two axes
-and the cycle rules require a different pillar after a rejection.
+**Three cycles running, the named item was fixed and the version lost points
+elsewhere.** v004 fixed the back half and lost C and D; v005 fixed C and D and
+tied; v006 fixed reaction delivery and lost A and D. The fault is not the choice
+of item - it is shipping without checking the whole version against all five
+axes.
 
-Thirty-six new idle lines (four per villager per time of day became seven), a
-second way of thanking you for a repeated wish, and an idle rotation that steps
-by three so three villagers stop marching through their pools in lockstep. On
-the room: the mat put into the house palette, a mouth for Bodkin, the placement
-highlight anchored to the surface as a pool of light, and the item ghosted into
-place before you commit.
+**The arbiter's plan for v007 is explicit. Follow it rather than re-deriving it:**
 
-It worked on what it aimed at - **14 of 14 dialogue lines unique** against
-v004's 11, defined lines 147 to 192, reachability reversing a three-version
-slide - and it tied rather than beat the floor.
+1. **Finish the trigger side of reactions.** The queue on `rejected/v006` fixed
+   delivery and is verified. But `home.*` is byte-identical to v005 and the
+   three `room.water` lines went 3/5 to 4/5 missed, because room.water sits
+   behind one narrow gate that almost never opens. Start from that branch.
+2. **Then ship the back half together with its C and D work in one version.**
+   Not before. Every back-half milestone needs a villager reaction, and
+   reactions still do not reach the player. v004's groves are recoverable from
+   history; each milestone must *place* something and *cost* something.
 
-**What the arbiter took from it, and it is the useful part:** repetition was
-*restored*, not *reduced*. `mostRepeatedActionOfAnyKind` reads 65 and
-`worstAbsoluteRepetition` reads 55 - the same numbers, in the same seeds, on the
-same actions, as v003. Reverting v004 put them back; it did not improve them.
-The arbiter rejected the "down from 290" framing outright and was right to.
+**Binding from v007 - grind is a rate.** Fires if
+`mostRepeatedActionPerInGameDay` >= 15, or any action exceeds 0.35
+`shareOfWindow` in a window of >= 20 actions, or `monotonousWindows` is
+non-empty. Raw counts gate nothing either way. **Restoring an instrument is
+neutral**: no credit, no amnesty.
 
-**And it voided its own predecessor's gate**, finding the `shareOfWindow <= 0.20`
-rule inversely correlated with the defect it was meant to catch. That is twice
-now that a numeric gate set in one version has turned out to be miscalibrated
-when applied to the next. The lesson to carry: a gate written against one
-build's numbers is a hypothesis, not a law.
-
-## What comes next
-
-**Take BACKLOG item 1 - queue villager reactions.** Not more writing; the
-writing is fine. The reactions the game already has are being *discarded before
-delivery*: zero of fourteen sample lines across 38 in-game days name anything
-the player gathered, placed or built, and `marla.stage.2` has now been
-superseded before it could be spoken in five consecutive versions.
-
-Interlock check: villagers + decorating + village growth. Three pillars, so it
-is eligible as it stands.
-
-Do the two binding metrics items in the same cycle - they are small, they are
-overdue, and one of them is a veto that currently cannot fire.
+**Also unflagged until now:** every grind window closes by in-game day 17, so
+the instrument is blind to 95% of the run.
 
 ## What the game currently is
 
