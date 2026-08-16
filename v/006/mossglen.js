@@ -11,7 +11,7 @@ var DATA = (typeof MOSSGLEN_DATA !== 'undefined') ? MOSSGLEN_DATA : require('./m
 
 /* Freeze scripts rewrite this line. It namespaces the save so that opening a
    new version never disturbs an older one sitting in the same origin. */
-var VERSION = 'dev';
+var VERSION = '006';
 
 /* In-game minutes per real second. A day is 1440 minutes, so 6 means an
    in-game day passes in four real minutes. This is the tuning dial. */
@@ -622,7 +622,7 @@ if (typeof document !== 'undefined') (function () {
 
   /* Freeze scripts rewrite this line too, so a frozen version reads the
      assets sitting beside it rather than the working copy's. */
-  var ASSETS = '../assets/';
+  var ASSETS = 'assets/';
 
   var KEY = 'mossglen:v' + VERSION + ':save';
   var S = null, SCALE = 4, sprites = {}, ready = false;

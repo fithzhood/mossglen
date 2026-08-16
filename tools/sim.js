@@ -190,7 +190,7 @@ function runSeed(seed) {
   var grind = {};
   (function () {
     var R = C.newGame(seed), rr = rngFor(seed ^ 0x5bd1), mm = { waited: 0 };
-    var cnt = {}, prog = {}, reached = {};
+    var cnt = {}, prog = {}, reached = {}, winStartDay = 1;
     var g2 = 0;
     while (R.day <= DAYS && g2 < 400000) {
       g2++;
@@ -214,11 +214,14 @@ function runSeed(seed) {
           var atop = 0, atopId = null;
           Object.keys(cnt).forEach(function (k) { if (cnt[k] > atop) { atop = cnt[k]; atopId = k; } });
           var progTotal = 0;
+          var winDays = Math.max(1, R.day - (winStartDay || 1));
+          winStartDay = R.day;
           Object.keys(prog).forEach(function (k) { progTotal += prog[k]; });
           grind[gate] = {
             mostRepeatedRequiredAction: topId,
             requiredTimes: top,
             progressActionsInWindow: progTotal,
+            daysInWindow: winDays,
             /* what share of everything done in this window was that one
                action — the difference between a long stretch and a monotonous
                one */
@@ -409,7 +412,22 @@ var metrics = {
        done in that window, meaning there was no real alternative. Both numbers
        are reported per milestone below so this reading can be checked rather
        than taken on trust, and the raw worst case is reported regardless. */
-    grindRule: 'flagged when one action exceeds 15 repetitions AND is more than half of all progress actions in that milestone window',
+    grindRule: 'flagged when one action exceeds 15 repetitions in a milestone window — the plain reading of RUBRIC.md, restored after the previous arbiter found the narrowed conjunct structurally impossible to trip. shareOfWindow and perInGameDay ride alongside as context and gate nothing.',
+    /* The figure the arbiter asked for twice: repetition normalised by the
+       in-game days a window actually spans, so lengthening the arc stops
+       inflating it and shortening the arc stops flattering it. */
+    mostRepeatedActionPerInGameDay: (function () {
+      var worst = 0, at = null;
+      runs.forEach(function (r) {
+        Object.keys(r.grind).forEach(function (m) {
+          var g = r.grind[m];
+          if (!g.daysInWindow) return;
+          var v = +(g.requiredTimes / g.daysInWindow).toFixed(2);
+          if (v > worst) { worst = v; at = { seed: r.seed, milestone: m, action: g.mostRepeatedRequiredAction, perDay: v, times: g.requiredTimes, days: g.daysInWindow }; }
+        });
+      });
+      return at || { perDay: 0 };
+    })(),
     worstAbsoluteRepetition: (function () {
       var worst = { times: 0 };
       runs.forEach(function (r) {
@@ -445,9 +463,11 @@ var metrics = {
       runs.forEach(function (r) {
         Object.keys(r.grind).forEach(function (m) {
           var g = r.grind[m];
-          if (g.requiredTimes > 15 && g.shareOfWindow > 0.5) {
+          if (g.requiredTimes > 15) {
             v.push({ seed: r.seed, milestone: m, action: g.mostRepeatedRequiredAction,
-                     times: g.requiredTimes, shareOfWindow: g.shareOfWindow });
+                     times: g.requiredTimes, shareOfWindow: g.shareOfWindow,
+                     perInGameDay: g.daysInWindow ? +(g.requiredTimes / g.daysInWindow).toFixed(2) : null,
+                     alsoMonotonous: g.shareOfWindow > 0.5 });
           }
         });
       });

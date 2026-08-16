@@ -7,67 +7,64 @@ of the last one. Written for a stranger, because that is what you are.*
 
 ## Where things stand
 
-**Current version: v005, accepted at 20/25. Tagged, pushed, live. Working tree
-clean, nothing in progress.** The next cycle starts at Phase 1.
+**Last pushed version: v005, accepted at 20/25, live.**
 
-`20/25` is the ratchet floor and v005 tied it exactly, with zero margin. v006
-must total **21 or more**.
+**v006 is built, frozen into `v/006/`, measured, and the arbiter is judging it.**
+Not committed, not pushed. `main` is clean at tag `v005`.
 
-| axis | v001 | v002 | v003 | v004 (rejected) | v005 |
-|---|---|---|---|---|---|
-| A interlock | 3 | 4 | 4 | 4 | 4 |
-| B systemic health | 2 | 4 | 4 | 4 | 4 |
-| C visual charm | 3 | 3 | 4 | 3 | 4 |
-| D voice | 4 | 4 | 4 | 3 | 4 |
-| E session feel | 4 | 4 | 4 | 4 | 4 |
-| **total** | 16 | 19 | **20** | 18 | **20** |
+### If you are resuming and do not know the outcome
 
-Two versions in a row at 20. Every axis is 4 and none has ever been a 5. **The
-next point has to come from making one axis genuinely excellent**, and the
-arbiter has said plainly which item does that: BACKLOG item 1 closes A, B and D
-at once.
+Read `reports/006/scorecard.md`.
+- **ACCEPTED and >= 20** -> CHANGELOG, `index.html` newest-first with the score,
+  commit `v006: reactions that keep until somebody says them [score: N/25]`,
+  tag `v006`, push, confirm the live URL returns 200, fold the critique into
+  `BACKLOG.md`, rewrite this file.
+- **REJECTED** -> preserve it as `reports/006-rejected-scorecard.md`, then
+  `git reset --hard v005` and `git clean -fd`, record under `## Dead ends`, and
+  take a different pillar.
+- **Missing** -> re-run the arbiter; the recipe is at the bottom of this file.
 
-## What was just tried, and what happened
+## What v006 does
 
-**v005 - voice and the room.** Taken because v004 was rejected on those two axes
-and the cycle rules require a different pillar after a rejection.
+**Villager reactions are queued at the moment the thing happens** instead of
+being computed from current state whenever you next speak to somebody. That was
+the whole of the previous scorecard's headline complaint: reach stage 2 and
+stage 3 on the same afternoon and the stage-2 line was overwritten before anyone
+could say it; put a pinecone on a shelf and take it down again and the reaction
+never existed at all.
 
-Thirty-six new idle lines (four per villager per time of day became seven), a
-second way of thanking you for a repeated wish, and an idle rotation that steps
-by three so three villagers stop marching through their pools in lockstep. On
-the room: the mat put into the house palette, a mouth for Bodkin, the placement
-highlight anchored to the surface as a pool of light, and the item ghosted into
-place before you commit.
+Measured: **`marla.stage.2` went from missed by 4 of 5 seeds to 1 of 5** after
+five consecutive versions of never being delivered. Nothing unreachable,
+dialogue reach 96.18%.
 
-It worked on what it aimed at - **14 of 14 dialogue lines unique** against
-v004's 11, defined lines 147 to 192, reachability reversing a three-version
-slide - and it tied rather than beat the floor.
+Also the two binding metrics items:
+- **`mostRepeatedActionPerInGameDay` added** (reads 12.25). Asked for twice,
+  skipped in v005.
+- **The grind rule restored to the plain reading of RUBRIC.md.** The previous
+  arbiter found `grindViolations: []` had become structurally impossible to trip
+  under the inherited conjunct. It can fail again, **and it does: 13 violations,
+  worst 55** — the same 55 that v003 and v005 both reported. The behaviour did
+  not get worse; it is finally being counted. The arbiter was asked to rule on
+  that explicitly and to fix a stable rule, because how grind is measured has
+  now been in dispute for three consecutive versions.
 
-**What the arbiter took from it, and it is the useful part:** repetition was
-*restored*, not *reduced*. `mostRepeatedActionOfAnyKind` reads 65 and
-`worstAbsoluteRepetition` reads 55 - the same numbers, in the same seeds, on the
-same actions, as v003. Reverting v004 put them back; it did not improve them.
-The arbiter rejected the "down from 290" framing outright and was right to.
+### Two things tried this cycle and backed out
 
-**And it voided its own predecessor's gate**, finding the `shareOfWindow <= 0.20`
-rule inversely correlated with the defect it was meant to catch. That is twice
-now that a numeric gate set in one version has turned out to be miscalibrated
-when applied to the next. The lesson to carry: a gate written against one
-build's numbers is a hypothesis, not a law.
+**Queueing a reaction on first discovery of an item.** It sounded right and it
+made things worse: discoveries are frequent, they flooded the three-deep queue,
+and they pushed the stage reactions back out — undoing the fix the cycle
+existed for. Union-unreachable went 0 -> 2 and dialogue reach 96.18 -> 94.48.
+Reverted.
 
-## What comes next
+**Dropping the item fallback** that walks what you are actually carrying. With
+discoveries queued it looked redundant; it is not. A discovery happens once
+ever, so a queued discovery reaction that overflows is gone for good. The
+fallback is the net under the queue. Restored.
 
-**Take BACKLOG item 1 - queue villager reactions.** Not more writing; the
-writing is fine. The reactions the game already has are being *discarded before
-delivery*: zero of fourteen sample lines across 38 in-game days name anything
-the player gathered, placed or built, and `marla.stage.2` has now been
-superseded before it could be spoken in five consecutive versions.
-
-Interlock check: villagers + decorating + village growth. Three pillars, so it
-is eligible as it stands.
-
-Do the two binding metrics items in the same cycle - they are small, they are
-overdue, and one of them is a veto that currently cannot fire.
+A related bug worth remembering: the queue marks a line spoken when it is
+*queued*, so overflow has to un-mark it or the line is marked spoken and never
+spoken. That is the unreachable-content failure the queue exists to prevent,
+reintroduced by the queue itself.
 
 ## What the game currently is
 
