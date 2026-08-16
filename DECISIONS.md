@@ -277,6 +277,62 @@ patches this cycle failed that way, one silently. All source edits are now
 written as a `.py` file in the scratchpad and run from there, with an `assert`
 on every anchor.
 
+---
+
+## Cycle 4 — v004, the groves. REJECTED 18/25.
+
+Took the two things paired in STATE.md: repair the grind rule, and fix "the
+game is over on day 16". Built eight named groves the village green grows into,
+then an endless tail, each announced by a particular villager. Restored
+`grindViolations` to the plain reading of RUBRIC.md.
+
+**The structural fix worked and the arbiter said so** — 20 to 21 named
+milestones after day 16, spaced about fifteen in-game days, running to day
+283–299 in every seed, against v003's two events and 260 days of silence. It
+called it the largest structural improvement in the series.
+
+**It was rejected anyway, on the ratchet: 18 against v003's 20.** Two axes each
+lost a point, and neither loss had anything to do with the groves.
+
+**The arbiter voided its predecessor's binding condition rather than enforce
+it**, which is worth recording because it is the loop correcting itself. The
+v003 scorecard demanded both a milestone every 20 in-game days *and*
+`worstAbsoluteRepetition` below 55. At roughly 43 progress actions per in-game
+day, a 20-day window holds ~860 actions, in which no action can stay under 55
+unless the commonest thing a player does is under 6.4% of everything they do.
+The two conditions were arithmetically incompatible. It checked the normalised
+figures itself — v004's worst window is *less* concentrated than v003's
+(0.168 against 0.197) and repetition per in-game day actually fell — and ruled
+that enforcing the condition "would have taught this loop that the way to pass
+is to keep the game short". Replacement gates for v005 are in
+`reports/004/scorecard.md`, which is preserved even though the version is not.
+
+### Why it actually lost, and it was avoidable
+
+**D fell 4 → 3.** The dialogue sample held 11 distinct texts in 14 slots, the
+worst of any version including v001, with one line repeating two in-game days
+apart and v003's single player-reactive line gone from the sample. Root cause
+is the same as the repetition number: `talk:pim` fires 220–290 times in a
+window against a fixed idle pool. **A longer arc needs more writing, and I
+added twenty milestones without adding a single new idle line.**
+
+**C fell 4 → 3.** Zero of the four itemised visual faults were fixed in their
+fourth consecutive version — the rug, Bodkin's missing mouth, the floating
+decorating highlight, the absent ghost preview — and a new one arrived: the
+picker sheet now clips the legs of the very stool it asks you to decorate. The
+predecessor awarded C its 4 explicitly for fixing four faults; fixing none of
+the remainder and adding one cannot hold that score. **This is the third time
+in four versions I have deferred the cheap visible fixes for the interesting
+systemic one.** The pattern is now the most reliable thing about my judgement
+and it should be treated as a known bias, not rediscovered a fourth time.
+
+**And the groves cost nothing.** `plantings` 1106, `meanCarriedAtEnd` 691.8 and
+`utilisationPct.moss` 79.4 are identical to v003 **to the decimal**. The same
+1,106 plantings now trigger 20 events instead of 2. The arbiter's phrase for it
+is the useful one: *structure without content*. A milestone that places no
+object, says nothing new and draws no extra material out of the bag is a label
+on something that was already happening.
+
 ## Dead ends
 
 *(nothing yet)*

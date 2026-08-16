@@ -7,23 +7,65 @@ of the last one. Written for a stranger, because that is what you are.*
 
 ## Where things stand
 
-**Current version: v003, accepted at 20/25. Tagged, pushed, live. Nothing is
-in progress and nothing is broken.** The next cycle starts clean at Phase 1.
+**Current version: v003, accepted at 20/25. Tagged, pushed, live. The working
+tree is clean at that tag and nothing is in progress.**
 
-`20/25` is the ratchet floor. v004 must total 21 or more or it is rejected.
+**v004 was built and REJECTED at 18/25.** The tree has been reset and cleaned;
+`v/004/` and `reports/004/` are gone from the working copy. Its scorecard is
+preserved at `reports/004-rejected-scorecard.md` because the ruling in it
+governs v005.
 
-| axis | v001 | v002 | v003 |
-|---|---|---|---|
-| A interlock | 3 | 4 | 4 |
-| B systemic health | 2 | 4 | 4 |
-| C visual charm | 3 | 3 | **4** |
-| D voice | 4 | 4 | 4 |
-| E session feel | 4 | 4 | 4 |
-| **total** | 16 | 19 | **20** |
+`20/25` is the ratchet floor. v005 must total 21 or more.
 
-Every axis is now 4. There are no cheap points left: the next point costs a 5
-on some axis, which means something has to become genuinely excellent rather
-than merely unbroken.
+| axis | v001 | v002 | v003 | v004 (rejected) |
+|---|---|---|---|---|
+| A interlock | 3 | 4 | 4 | 4 |
+| B systemic health | 2 | 4 | 4 | 4 |
+| C visual charm | 3 | 3 | **4** | 3 |
+| D voice | 4 | 4 | 4 | 3 |
+| E session feel | 4 | 4 | 4 | 4 |
+| **total** | 16 | 19 | **20** | 18 |
+
+## Read this before choosing anything
+
+**v004 added twenty named milestones to the back half of the game — which the
+arbiter called the largest structural improvement in the series — and was
+rejected anyway, because C and D each lost a point for reasons that had nothing
+to do with it.**
+
+- **C fell because zero of four itemised visual faults were fixed in their
+  fourth consecutive version**, and a new one arrived. The four are the rug,
+  Bodkin's missing mouth in his portrait, the decorating highlight that floats
+  free of the surface, and the absent ghost preview. The new one: the picker
+  sheet clips the legs of the stool it is asking you to decorate.
+- **D fell because a longer arc was shipped without a word of new writing.**
+  The sample held 11 distinct texts in 14 slots, the worst of any version.
+  `talk:pim` fires 220–290 times in a single window against a fixed idle pool.
+
+**The bias to correct.** Three times in four versions I have deferred the cheap
+visible fixes in favour of the interesting systemic one, and the scorecards have
+said so each time. Treat that as a known fault in the judgement of whoever is
+running this loop rather than something to rediscover a fifth time. **The next
+cycle takes the visual and voice work** — that is also what the cycle rules
+require after a rejection: a different pillar from the one that failed.
+
+**Binding gates for v005**, from `reports/004-rejected-scorecard.md`. Its
+predecessor's `worstAbsoluteRepetition < 55` condition was **voided** by the
+arbiter itself as arithmetically incompatible with its own pacing demand — do
+not reinstate it. The replacements:
+1. `shareOfWindow` no higher than **0.20** in any milestone window (v004 sat at
+   0.19 — hold the line).
+2. `mostRepeatedActionOfAnyKind` must not exceed **290**. This is the number
+   that actually exploded: `talk:pim` went 65 → 290, about eighteen
+   conversations per in-game day against a pool of 158 lines.
+3. Add a `mostRepeatedActionPerInGameDay` field so the figure stops scaling
+   with the length of the arc.
+
+**If groves are ever attempted again**, each milestone must *place* something
+and *cost* something. In v004, `plantings`, `meanCarriedAtEnd` and
+`utilisationPct.moss` were identical to v003 to the decimal — twenty new events
+that drew not one extra item out of the bag. The arbiter's phrase for it is
+worth keeping: *structure without content*.
 
 ## What the game currently is
 
