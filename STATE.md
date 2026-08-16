@@ -39,7 +39,18 @@ axes.
 1. **Finish the trigger side of reactions.** The queue on `rejected/v006` fixed
    delivery and is verified. But `home.*` is byte-identical to v005 and the
    three `room.water` lines went 3/5 to 4/5 missed, because room.water sits
-   behind one narrow gate that almost never opens. Start from that branch.
+   behind one narrow gate that almost never opens.
+
+   **Start from that branch, not from main:** `git checkout rejected/v006`. It
+   already carries one unjudged commit beyond the rejected build — the room
+   mood gate lowered from 3 shared tags to 2, because 3 meant a mood needed
+   every item carrying that tag placed at once and there are exactly three
+   water items against six slots. Regression passes on it; it has not been
+   simulated, frozen or judged. Verify that change actually moves
+   `room.*` reach before building anything on top of it.
+
+   When v007 is ready and accepted, merge it to `main` and tag it there —
+   `main` must only ever carry accepted versions.
 2. **Then ship the back half together with its C and D work in one version.**
    Not before. Every back-half milestone needs a villager reaction, and
    reactions still do not reach the player. v004's groves are recoverable from

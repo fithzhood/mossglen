@@ -3,3 +3,5 @@ package-lock.json
 
 # scratch composites from the sprite pipeline, not part of any report
 reports/_*.png
+logs/
+STOP-LOOP
