@@ -120,8 +120,27 @@ function ok(name, cond, detail) {
       ok('wish item is obtainable: ' + v.id + '/' + w, !!DATA.items[w]);
     });
     ['morning', 'day', 'evening', 'night'].forEach(function (t) {
-      ok('idle pool ' + v.id + '/' + t, L.idle[t] && L.idle[t].length >= 3,
+      /* v004 lost a point on voice for shipping a longer arc with no new
+         writing; seven per bucket is the floor that keeps that from recurring */
+      ok('idle pool ' + v.id + '/' + t, L.idle[t] && L.idle[t].length >= 7,
         'only ' + ((L.idle[t] || []).length) + ' lines');
+      var uniq = {};
+      (L.idle[t] || []).forEach(function (x) { uniq[x] = 1; });
+      ok('idle pool has no duplicates ' + v.id + '/' + t,
+        Object.keys(uniq).length === (L.idle[t] || []).length);
+    });
+    v.wishes.forEach(function (w) {
+      ok('second thanks for ' + v.id + '/' + w,
+        DATA.thanksAgain[v.id] && typeof DATA.thanksAgain[v.id][w] === 'string');
+      ok('the two thanks differ ' + v.id + '/' + w,
+        DATA.thanksAgain[v.id][w] !== L.thanks[w]);
+    });
+    /* a stride that shares a factor with the pool would never reach some lines */
+    ['morning', 'day', 'evening', 'night'].forEach(function (t) {
+      var n = (L.idle[t] || []).length, seen = {}, i = 0;
+      for (var k = 0; k < n; k++) { seen[i] = 1; i = (i + 3) % n; }
+      ok('idle rotation reaches every line ' + v.id + '/' + t,
+        Object.keys(seen).length === n, 'reached ' + Object.keys(seen).length + ' of ' + n);
     });
     Object.keys(L.stage).forEach(function (n) {
       ok('stage line ' + v.id + '/' + n + ' matches a real stage',

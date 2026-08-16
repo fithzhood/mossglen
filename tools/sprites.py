@@ -292,7 +292,7 @@ port_bodkin = [
     ".#IIIIVVVVVVIIIJ#...",
     ".#IIIIVVVVVVIIIJ#...",
     ".#IIIIIVVVVIIIIJ#...",
-    "..#IIIIIVVIIIIJ#....",
+    "..#IIII#II#IIIJ#....",
     "...#IIIIIIIIIJ#.....",
     "....##########......",
     "...#MMMMMMMMM#......",

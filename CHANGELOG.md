@@ -4,6 +4,42 @@ Append-only. One entry per accepted version.
 
 ---
 
+## v005 — 2026-08-16
+
+**More to say, and a room that finishes its own sentences.**
+
+v004 tried to fix the empty back half of the game, succeeded structurally, and
+was rejected anyway because two other axes each lost a point — voice, because a
+longer arc shipped without a word of new writing, and visual charm, because
+four itemised faults went unfixed for a fourth version while a fifth arrived.
+v004 was reverted whole. This version is the correction.
+
+- **Thirty-six new lines.** Every villager's idle pool went from four lines per
+  time of day to seven. The regression suite holds seven as a floor and asserts
+  no duplicates inside a pool, so this cannot quietly drift back.
+- **Villagers thank you differently the second time.** Wishes cycle for ever, so
+  one thank-you per gift is a line you hear every few days.
+- **The idle rotation steps by three, not one**, so three villagers spoken to in
+  the same order each day stop marching through their pools in lockstep. A
+  stride of three against a pool of seven still reaches every line before
+  repeating any, and there is a check that says so.
+- **The mat is in the house palette** — woven, fringed, warm brown — instead of
+  the lavender slab it inherited from the rug it replaced.
+- **Bodkin has a mouth.**
+- **The placement highlight is a pool of light on the surface** rather than a
+  box floating above it, and **the thing you are about to put down is ghosted
+  into place** before you commit to it.
+- **The picker sheet no longer clips the stool** it is asking you to decorate.
+
+Measured against v003: dialogue sample **14 of 14 lines unique** (v004: 11/14),
+`mostRepeatedActionOfAnyKind` **65** against a gate of 290 (v004: 290), defined
+lines 147 → 192, grind violations 0, nothing unreachable, softlocks 0.
+
+**Arbiter: 20/25** — A 4, B 4, C 4, D 4, E 4. Accepted; the ratchet clears at
+exactly the floor.
+
+---
+
 ## v003 — 2026-08-16
 
 **The room, and one hope a day.**
