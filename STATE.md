@@ -7,80 +7,67 @@ of the last one. Written for a stranger, because that is what you are.*
 
 ## Where things stand
 
-**Last pushed version: v003, accepted at 20/25, live.**
+**Current version: v005, accepted at 20/25. Tagged, pushed, live. Working tree
+clean, nothing in progress.** The next cycle starts at Phase 1.
 
-**v005 is built, frozen into `v/005/`, measured, and the arbiter is judging it.**
-Not committed, not pushed. `main` is clean at tag `v003`.
+`20/25` is the ratchet floor and v005 tied it exactly, with zero margin. v006
+must total **21 or more**.
 
-**v004 was REJECTED at 18/25 and fully reverted.** Its scorecard is kept at
-`reports/004-rejected-scorecard.md` because the gates in it govern this version.
+| axis | v001 | v002 | v003 | v004 (rejected) | v005 |
+|---|---|---|---|---|---|
+| A interlock | 3 | 4 | 4 | 4 | 4 |
+| B systemic health | 2 | 4 | 4 | 4 | 4 |
+| C visual charm | 3 | 3 | 4 | 3 | 4 |
+| D voice | 4 | 4 | 4 | 3 | 4 |
+| E session feel | 4 | 4 | 4 | 4 | 4 |
+| **total** | 16 | 19 | **20** | 18 | **20** |
 
-### If you are resuming and do not know the outcome
+Two versions in a row at 20. Every axis is 4 and none has ever been a 5. **The
+next point has to come from making one axis genuinely excellent**, and the
+arbiter has said plainly which item does that: BACKLOG item 1 closes A, B and D
+at once.
 
-Read `reports/005/scorecard.md`.
+## What was just tried, and what happened
 
-- **ACCEPTED and ≥ 20** → CHANGELOG, `index.html` (newest first, with the
-  score), commit `v005: <one line> [score: N/25]`, tag `v005`, push, confirm
-  https://fithzhood.github.io/mossglen/v/005/mossglen.html returns 200, then
-  fold the critique into `BACKLOG.md` and rewrite this file.
-- **REJECTED** → `git reset --hard v003`, `git clean -fd`, record under
-  `## Dead ends`, take a different pillar next cycle. Preserve the scorecard
-  as `reports/005-rejected-scorecard.md` first.
-- **Missing** → the arbiter never finished; re-run it. Fresh context, given only
-  `PILLARS.md`, `RUBRIC.md`, `reports/005/metrics.json`, the seven screenshots,
-  `dialogue-sample.txt`, `console-errors.txt`, and the previous scorecards.
-  Withhold the code, the diff and the backlog item name.
+**v005 - voice and the room.** Taken because v004 was rejected on those two axes
+and the cycle rules require a different pillar after a rejection.
 
-## What v005 does
+Thirty-six new idle lines (four per villager per time of day became seven), a
+second way of thanking you for a repeated wish, and an idle rotation that steps
+by three so three villagers stop marching through their pools in lockstep. On
+the room: the mat put into the house palette, a mouth for Bodkin, the placement
+highlight anchored to the surface as a pool of light, and the item ghosted into
+place before you commit.
 
-It targets the two axes that lost v004 — voice and visual charm — because the
-cycle rules require a different pillar after a rejection, and because those two
-are where the points went, not the groves.
+It worked on what it aimed at - **14 of 14 dialogue lines unique** against
+v004's 11, defined lines 147 to 192, reachability reversing a three-version
+slide - and it tied rather than beat the floor.
 
-- **The idle pools went from four lines per villager per time of day to seven**,
-  which is 36 new lines. v004 shipped a longer arc with no new writing and lost
-  a point for it. The regression suite now holds seven as a floor and asserts
-  no duplicates within a pool.
-- **Villagers thank you differently the second time.** Wishes cycle for ever, so
-  a single thank-you per gift is a line the player hears every few days;
-  `thanksAgain` gives each villager a second way of saying it.
-- **The idle rotation steps by three instead of one**, so three villagers spoken
-  to in the same order each day stop marching through their pools in lockstep.
-  There is a check that a stride of 3 against a pool of 7 still reaches every
-  line before repeating any.
-- **Four itemised visual faults addressed**: the mat is in the house palette
-  with a woven face and fringe instead of lavender; Bodkin's portrait has a
-  mouth; the placement highlight is a pool of light on the surface rather than
-  a box floating above it; and the item you are about to put down is ghosted
-  into place before you commit. The picker sheet was also shortened so it stops
-  clipping the stool it asks you to decorate.
+**What the arbiter took from it, and it is the useful part:** repetition was
+*restored*, not *reduced*. `mostRepeatedActionOfAnyKind` reads 65 and
+`worstAbsoluteRepetition` reads 55 - the same numbers, in the same seeds, on the
+same actions, as v003. Reverting v004 put them back; it did not improve them.
+The arbiter rejected the "down from 290" framing outright and was right to.
 
-Measured: **14 of 14 dialogue lines unique** (v004 was 11/14),
-`mostRepeatedActionOfAnyKind` **65** against the gate of 290 (v004 hit 290),
-grind violations 0, nothing unreachable, dialogue reach 96.1%, carried 691.8,
-softlocks 0, crashes 0, all five three-minute sessions pleasant.
+**And it voided its own predecessor's gate**, finding the `shareOfWindow <= 0.20`
+rule inversely correlated with the defect it was meant to catch. That is twice
+now that a numeric gate set in one version has turned out to be miscalibrated
+when applied to the next. The lesson to carry: a gate written against one
+build's numbers is a hypothesis, not a law.
 
-### The one gate that is missed, stated plainly
+## What comes next
 
-`shareOfWindow` peaks at **0.38** against the gate of 0.20. The gate was
-calibrated on v004, where the grove milestones made windows about 730 progress
-actions long. v004 was reverted, so the windows are back to roughly 279 actions
-and the same behaviour divides by a smaller denominator: absolute repetition
-fell hard (290 → 65) while the share rose. Whether a gate calibrated on a
-version that no longer exists can bind this one is the arbiter's call, and it
-was told so in exactly those words. The third gate — a
-`mostRepeatedActionPerInGameDay` field — was **not added**, and the arbiter was
-told that too. If it rules against either, that is the honest outcome.
+**Take BACKLOG item 1 - queue villager reactions.** Not more writing; the
+writing is fine. The reactions the game already has are being *discarded before
+delivery*: zero of fourteen sample lines across 38 in-game days name anything
+the player gathered, placed or built, and `marla.stage.2` has now been
+superseded before it could be spoken in five consecutive versions.
 
-### The bias to keep correcting
+Interlock check: villagers + decorating + village growth. Three pillars, so it
+is eligible as it stands.
 
-Three times in four versions the cheap visible fixes were deferred for the
-interesting systemic one, and the scorecards said so each time. v005 is the
-correction. **The back half of the game is still the largest open problem** —
-v004 proved named milestones fix it structurally — but any re-attempt must make
-each milestone *place* something and *cost* something, because v004's twenty
-milestones left `plantings`, `meanCarriedAtEnd` and `utilisationPct.moss`
-identical to v003 to the decimal. Structure without content.
+Do the two binding metrics items in the same cycle - they are small, they are
+overdue, and one of them is a veto that currently cannot fire.
 
 ## What the game currently is
 

@@ -1,139 +1,117 @@
 # BACKLOG.md
 
-Candidate directions. Never empty — if this drops below five items, the next
-arbiter session opens a new axis of evaluation and refills it.
+Candidate directions. Never empty. Each item names the pillars it connects;
+anything touching fewer than two is not eligible until reshaped.
 
-Each item states which pillars it connects. Anything touching fewer than two is
-not eligible; reshape it until it does, or drop it.
-
-Scores are the arbiter's expected value, 1–5.
+Scores are the arbiter's expected value, 1-5.
 
 ---
 
-## Binding on v004 — not optional, not scored
+## Binding on v006 — not optional, not scored
 
-**The grind rule must be repaired before anything else ships.** The arbiter
-cleared the narrowed definition once, spent the clearance, and ruled:
+From `reports/005/scorecard.md`:
 
-> v004 that reports `worstAbsoluteRepetition` at or above 55, or that still
-> computes `grindViolations` under the conjunct alone, is a rejection on the
-> grind veto with no further argument entertained.
-
-Two things are required, and the second is a game change, not a metrics change:
-
-1. `grindViolations` must apply the raw count as a **co-equal** criterion
-   alongside the share, not merely report it. Reporting a number you have
-   defined out of the test is not restoring it.
-2. `worstAbsoluteRepetition` must come **down** from 55
-   (`gather:berrybush`, seed 888001, `built:steppingstones`, 279-action
-   window). It did not move during the v003 regeneration, and the arbiter
-   noticed.
-
-The arbiter also named the number to chase first, which no rule currently
-tests at all: **`talk:marla` 65 times inside one project window.** Sixty-five
-conversations in seven in-game days is the repetition a player actually feels.
+1. **Add `mostRepeatedActionPerInGameDay`.** Asked for in v004's scorecard,
+   skipped in v005 "in the version with room for it". It is the cheapest of the
+   three gates and it is the one that stops the repetition figure scaling with
+   the length of the arc.
+2. **Restore a grind rule that can actually fail.** v004 restored the plain
+   reading of RUBRIC.md; v004 was reverted, so v005 silently inherited v003's
+   conjunct rule again. `grindViolations: []` is now *structurally impossible*
+   to trip — it needs a share above 0.50 and the file maximum is 0.38. A veto
+   that cannot fire is not a veto.
+3. The `shareOfWindow <= 0.20` gate was **voided** by the arbiter itself, which
+   found it inversely correlated with the defect: the 0.38 breach is three
+   mushroom donations in an eight-action window, while the genuinely worst
+   window in the file — 55 berry-picks — scores 0.20 and passes. Do not
+   reinstate it.
 
 ---
 
 ## Ranked
 
-### 1. The game is over on day 16 *(5/5 — arbiter, v003)*
-**Pillars: village growth + gathering + villagers.**
+### 1. Queue villager reactions instead of firing them *(5/5 - arbiter, v005)*
+**Pillars: villagers + decorating + village growth.**
 
-Stage is terminal on in-game day 2–3. All six projects finish by day 17 — v002
-reached day 38, so this got *worse*. The board then has nothing left to
-display for 284 days, and the silence now shows up as a number:
-`meanCarriedAtEnd` went 58 → **691.8** inside a single version, with
-`carriedEvery10Days` climbing to 554–828 and **no plateau in any seed**, and
-moss falling out of the healthy band to `utilisationPct: 79.4`.
+The arbiter's single most important weakness, and it says this one item closes
+A, B and D at once.
 
-The green absorbs material but produces no milestone, no board entry and no
-line after `planted:100`. Give the back half of the game named, growing goals
-on the board — a meadow, an orchard, a lantern route — with a threshold every
-few hundred plantings that changes the clearing visibly and gets a villager
-line. Target: a new named milestone every 20 in-game days out to day 200, and
-`carriedEvery10Days` that plateaus.
+**The decorating -> villager arrow is written but never fires.** Zero of 14
+sample lines across in-game days 1-38 name anything the player gathered, placed
+or built. The `*.room.*` and `*.home.*` families are precisely the lines missed
+by 3-4 of 5 seeds. `marla.stage.2` has been superseded before delivery for
+**five straight versions** because stages 2 and 3 both complete on day 1 and the
+reaction is overwritten before the player next speaks to anyone.
 
-### 2. Itemize where the bloom goes *(4/5 — arbiter, v003)*
-**Pillars: village growth + gathering.**
+The fix is structural, not more writing: hold reactions in a per-villager queue
+that survives the event that caused them, and deliver them on the next
+conversation instead of discarding them. A villager who says "I saw what you did
+with the shelf" three days late is still reacting; a villager whose reaction was
+overwritten before you spoke to them never reacted at all.
 
-Roughly **18,800 bloom is earned per seed and 0–18 is held at the end**, while
-the only itemized sinks in the file are six projects and a
-`finalStageBloomCost: 140`. `bloomHasNoSinkAfterFinalStage: false` asserts a
-sink exists but never names it.
-
-This is the same shape of unnamed channel as v002's 26% item leak — which is
-exactly the shape that hid a hard-veto loss bug for two whole versions. An
-unitemized flow is where defects live. Report bloom inflow and outflow by
-source the way items already are.
-
-### 3. Marla is the villager nobody hears *(4/5 — arbiter, v003)*
+### 2. Bodkin still has no mouth, fifth version *(4/5 - arbiter, v005)*
 **Pillars: villagers + decorating.**
 
-Marla gets 2 lines of 14 in the sample against Pim's 8, and she is also the
-villager most often unheard in the data: `marla.stage.2`, `marla.hint.hollow`
-and `marla.room.water` are each missed by 4 of 5 seeds.
+`1-village-morning.png` now proves it is an outlier rather than a style: the
+other two villagers each carry a mouth mark and Bodkin has a featureless pink
+blob. A mouth was added to the portrait in v005 and the arbiter still reads it
+as absent, so the fix did not land visually — check the rendered PNG rather than
+the ASCII, and check the world sprite as well as the portrait.
 
-Underneath it, **per-playthrough dialogue reach is falling and accelerating**:
-98.18 (v002) → 96.86 → **94.98**, worst seed 91.2%, and the newest lines land
-in the least-reachable slots. The union across seeds is still complete, so no
-veto fires — but every individual playthrough is seeing less of the writing
-than the one before, which is the trend that matters.
+Also still open: the mat's right edge is clipped by the panel, and the picker
+sheet still overlaps the stool by about 22px (down from 100).
 
-Two fixes, both cheap: hold stage reactions in a queue that survives the next
-stage change (stages 2 and 3 both complete on day 1, so those lines are
-superseded before anyone is spoken to), and make villager encounter rates even
-rather than a function of who happens to stand nearest the player's start.
+### 3. The back half of the game is empty again *(5/5 - carried, unresolved)*
+**Pillars: village growth + gathering + villagers.**
 
-### 4. Recolour the door mat *(3/5 — arbiter, v003)*
-**Pillars: decorating + villagers.**
+v004 fixed this with named groves, was rejected on other axes, and was reverted
+whole - so the problem is exactly as it was. The arc is 16 in-game days of 300.
 
-The one visual fault still standing after three versions. It is lavender in a
-cream-and-brown room, it is the only off-palette object left in the build, it
-sits on the wall/floor seam, and it is clipped by the right edge of the panel.
-It inherited the old rug's colours when it replaced it. Put it in the existing
-green/brown/cream ramp and move it clear of the seam.
+**If it is re-attempted, each milestone must place something and cost
+something.** v004's twenty milestones left `plantings`, `meanCarriedAtEnd` and
+`utilisationPct.moss` identical to v003 *to the decimal*. The arbiter's phrase
+for that is worth keeping: **structure without content**. The grove data and
+prose are recoverable from git history at the v004 attempt if wanted.
 
-### 5. Prove a late session is pleasant, not just the tutorial *(3/5 — arbiter, v003)*
-**Pillars: session feel — measurement, so pair it with a real change.**
+Five economy numbers have now been frozen for three consecutive versions.
 
-For the third consecutive version every three-minute sample is taken at
+### 4. Marla is disappearing *(3/5 - arbiter, v005)*
+**Pillars: villagers.**
+
+Down to 1 line of 14 in the sample. She is also the villager whose lines are
+most often unheard. Whatever decides who the player runs into is weighted
+against her.
+
+### 5. Prove a late session is pleasant *(4/5 - arbiter, raised three times)*
+**Pillars: session feel - measurement, so pair it with a real change.**
+
+Fifth consecutive version where every `threeMinuteSessions` entry reads
 `inGameDaysElapsed: 0.75` and every quoted line is a first meeting. The
 artifacts only ever prove the tutorial is pleasant. Sample a cold three-minute
-session at day 30 and day 100 as well. Seed 888001 also still reports
-`decorated: false`.
+session at day 30 and day 100.
 
-### 6. Villagers who notice each other *(—)*
+### 6. Villagers who notice each other *(-)*
 **Pillars: villagers + decorating.**
 
 Pim, Marla and Bodkin still never refer to one another.
 
-### 7. The three areas are one area with different props *(—)*
+### 7. The three areas are one area with a tint swap *(-)*
 **Pillars: gathering + village growth.**
 
-Clearing, pond path and hollow share a ground routine with a tint swap.
-
-### 8. Weather *(—)*
+### 8. Weather *(-)*
 **Pillars: gathering + villagers.**
 
-Rain that changes what the spots yield and gives every villager something new
-and specific to say.
-
-### 9. Nothing to do at night but the same things *(—)*
+### 9. Nothing to do at night but the same things *(-)*
 **Pillars: gathering + villagers.**
-
-Night changes the palette and the idle lines, and that is all.
 
 ---
 
 ## Held for later
 
-- **Sound.** Still no audio at all.
-- **Bodkin's portrait** is legible now but still the world-sprite design — a
-  lilac blob for a mouth and a stray beige column across the jaw.
-- **Canvas scale wastes width on short, wide viewports.** 90% on a 390 × 844
-  phone, ~57% on a 678 × 730 window. Deliberate — see DECISIONS.md.
-- **Save migration.** `SAVE_V` is still 1. v003 added `bloomEver`, `built`,
-  `plantings` and `wishDay`; the loader tolerates all of them being absent and
-  back-fills `bloomEver` from the recorded stage. The first change that
-  genuinely invalidates a save will need a real migration.
+- **Sound.** Still none.
+- **Rare finds have nowhere to go.** Glass bead and feather are the best-drawn
+  items and among the least used. Overlaps with item 3.
+- **Canvas scale wastes width on short, wide viewports.** Deliberate; see
+  DECISIONS.md.
+- **Save migration.** `SAVE_V` is still 1 and the loader tolerates every field
+  added so far.
